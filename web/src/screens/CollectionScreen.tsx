@@ -216,6 +216,13 @@ export default function CollectionScreen() {
               </>
             )}
 
+            <button
+  style={styles.marketBtn}
+  onClick={() => window.open(`https://www.brickeconomy.com/search?q=${selected.set_number}`, '_blank')}
+>
+  💰 Check Market Value
+</button>
+
             <button style={styles.saveBtn} onClick={handleSave} disabled={saving}>
               {saving ? 'Saving...' : 'Save Changes'}
             </button>
@@ -498,6 +505,17 @@ const styles: Record<string, React.CSSProperties> = {
     background: 'transparent',
     color: 'rgba(255,255,255,0.4)',
     fontSize: '14px',
+    cursor: 'pointer',
+    marginTop: '12px'
+  },
+  marketBtn: {
+    width: '100%',
+    padding: '14px',
+    borderRadius: '8px',
+    border: '1px solid rgba(255,255,255,0.2)',
+    backgroundColor: 'rgba(0,8,20,0.5)',
+    color: Colors.white,
+    fontSize: '15px',
     cursor: 'pointer',
     marginTop: '12px'
   }
