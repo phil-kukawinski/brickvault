@@ -1,0 +1,21 @@
+{
+  "name": "BrickVault",
+  "short_name": "BrickVault",
+  "description": "Your LEGO collection, organized.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#001B3D",
+  "theme_color": "#001B3D",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
