@@ -174,7 +174,6 @@ const styles: Record<string, React.CSSProperties> = {
   },
   header: {
     padding: '60px 24px 16px',
-    borderBottom: '1px solid rgba(255,255,255,0.1)'
   },
   backBtn: {
     background: 'none',
