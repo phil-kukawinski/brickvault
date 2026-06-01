@@ -21,7 +21,7 @@ body::before {
   background-image: url('/bricks.png');
   background-repeat: repeat;
   background-size: 300px;
-  opacity: 0.2;
+  opacity: 0.05;
   pointer-events: none;
   z-index: 0;
 }
