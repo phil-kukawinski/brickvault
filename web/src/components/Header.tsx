@@ -19,7 +19,7 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     justifyContent: 'center',
     padding: '8px 24px 0px',
-    backgroundColor: Colors.navy
+    backgroundColor: 'transparent'
   },
   logoBtn: {
     background: 'none',

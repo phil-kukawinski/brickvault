@@ -169,7 +169,7 @@ export default function ScanScreen() {
 const styles: Record<string, React.CSSProperties> = {
   container: {
     minHeight: '100vh',
-    backgroundColor: Colors.navy,
+    backgroundColor: 'transparent',
     color: Colors.white
   },
   header: {

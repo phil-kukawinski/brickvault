@@ -63,7 +63,7 @@ export default function HomeScreen() {
 const styles: Record<string, React.CSSProperties> = {
   container: {
     minHeight: '100vh',
-    backgroundColor: Colors.navy,
+    backgroundColor: 'transparent',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
