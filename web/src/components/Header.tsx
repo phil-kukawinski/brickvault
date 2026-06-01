@@ -18,7 +18,7 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: '16px 24px',
+    padding: '8px 24px 0px',
     backgroundColor: Colors.navy
   },
   logoBtn: {
@@ -28,7 +28,7 @@ const styles: Record<string, React.CSSProperties> = {
     padding: 0
   },
   logo: {
-    height: '48px',
+    height: '96px',
     objectFit: 'contain'
   }
 }

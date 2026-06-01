@@ -173,7 +173,7 @@ const styles: Record<string, React.CSSProperties> = {
     color: Colors.white
   },
   header: {
-    padding: '60px 24px 16px',
+    padding: '8px 24px 16px',
   },
   backBtn: {
     background: 'none',
