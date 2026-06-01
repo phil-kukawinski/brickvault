@@ -77,6 +77,7 @@ export default function ScanScreen() {
 
   return (
     <div style={styles.container}>
+        <Header />
       <div style={styles.header}>
         <button style={styles.backBtn} onClick={() => navigate('/')}>← Back</button>
         <h1 style={styles.title}>Add a Set</h1>

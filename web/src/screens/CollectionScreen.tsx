@@ -90,6 +90,7 @@ export default function CollectionScreen() {
 
   return (
     <div style={styles.container}>
+        <Header />
       <div style={styles.header}>
         <button style={styles.backBtn} onClick={() => navigate('/')}>← Back</button>
         <div style={styles.headerRow}>
