@@ -94,7 +94,7 @@ const styles: Record<string, React.CSSProperties> = {
     marginBottom: '24px'
   },
   card: {
-    backgroundColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: 'rgba(0,8,20,0.6)',
     border: '1px solid rgba(255,255,255,0.15)',
     borderRadius: '16px',
     padding: '24px',
@@ -146,7 +146,7 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '16px',
     borderRadius: '8px',
     border: '1px solid rgba(255,255,255,0.2)',
-    backgroundColor: 'transparent',
+    backgroundColor: 'rgba(0,8,20,0.6)',
     color: Colors.yellow,
     fontSize: '16px',
     cursor: 'pointer'

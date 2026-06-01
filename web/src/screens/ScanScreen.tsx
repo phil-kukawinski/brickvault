@@ -196,7 +196,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   input: {
     flex: 1,
-    backgroundColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: 'rgba(0,8,20,0.6)',
     border: '1px solid rgba(255,255,255,0.15)',
     borderRadius: '8px',
     padding: '12px',
@@ -278,15 +278,7 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: 'center',
     marginBottom: '8px'
   },
-  conditionBtn: {
-    padding: '8px 14px',
-    borderRadius: '20px',
-    border: '1px solid rgba(255,255,255,0.2)',
-    backgroundColor: 'transparent',
-    color: Colors.white,
-    fontSize: '13px',
-    cursor: 'pointer'
-  },
+  
   conditionBtnActive: {
     backgroundColor: Colors.yellow,
     borderColor: Colors.yellow,
@@ -325,7 +317,7 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '12px 24px',
     borderBottom: '1px solid rgba(255,255,255,0.08)',
     cursor: 'pointer',
-    background: 'transparent',
+    backgroundColor: 'rgba(0,8,20,0.4)',
     border: 'none',
     textAlign: 'left',
     width: '100%',

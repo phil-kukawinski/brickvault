@@ -285,7 +285,7 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '8px 16px',
     borderRadius: '20px',
     border: '1px solid rgba(255,255,255,0.2)',
-    background: 'transparent',
+    backgroundColor: 'rgba(0,8,20,0.5)',
     color: Colors.white,
     fontSize: '14px',
     cursor: 'pointer'
@@ -323,7 +323,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   card: {
     display: 'flex',
-    backgroundColor: 'rgba(255,255,255,0.07)',
+    backgroundColor: 'rgba(0,8,20,0.6)',
     border: '1px solid rgba(255,255,255,0.12)',
     borderRadius: '12px',
     overflow: 'hidden',
@@ -344,7 +344,7 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     justifyContent: 'center',
     fontSize: '32px',
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: 'rgba(0,8,20,0.5)',
     flexShrink: 0
   },
   cardContent: {
@@ -400,7 +400,7 @@ const styles: Record<string, React.CSSProperties> = {
     zIndex: 1000
   },
   modalCard: {
-    backgroundColor: Colors.navy,
+    backgroundColor: '#001020',
     borderTop: '1px solid rgba(255,255,255,0.15)',
     borderRadius: '16px 16px 0 0',
     padding: '24px',
