@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { Colors } from '../lib/theme'
+import Header from '../components/Header'
 
 type CollectionItem = {
   id: string

@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { fetchSetBySetNum, searchSets } from '../lib/rebrickable'
 import type { LegoSet } from '../lib/rebrickable'
 import { Colors } from '../lib/theme'
+import Header from '../components/Header'
 
 export default function ScanScreen() {
   const [input, setInput] = useState('')

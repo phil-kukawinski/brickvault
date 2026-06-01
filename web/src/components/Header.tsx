@@ -1,0 +1,34 @@
+import { useNavigate } from 'react-router-dom'
+import { Colors } from '../lib/theme'
+
+export default function Header() {
+  const navigate = useNavigate()
+
+  return (
+    <div style={styles.header}>
+      <button style={styles.logoBtn} onClick={() => navigate('/')}>
+        <img src="/logo.png" alt="BrickVault" style={styles.logo} />
+      </button>
+    </div>
+  )
+}
+
+const styles: Record<string, React.CSSProperties> = {
+  header: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: '16px 24px',
+    borderBottom: '1px solid rgba(255,255,255,0.1)',
+    backgroundColor: Colors.navy
+  },
+  logoBtn: {
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    padding: 0
+  },
+  logo: {
+    height: '48px',
+    objectFit: 'contain'
+  }
+}
