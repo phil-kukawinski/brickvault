@@ -278,7 +278,15 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: 'center',
     marginBottom: '8px'
   },
-  
+  conditionBtn: {
+    padding: '8px 14px',
+    borderRadius: '20px',
+    border: '1px solid rgba(255,255,255,0.2)',
+    backgroundColor: 'rgba(0,8,20,0.6)',
+    color: Colors.white,
+    fontSize: '13px',
+    cursor: 'pointer'
+  },
   conditionBtnActive: {
     backgroundColor: Colors.yellow,
     borderColor: Colors.yellow,
