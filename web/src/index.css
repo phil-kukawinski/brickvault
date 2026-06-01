@@ -9,12 +9,30 @@ body {
   background-color: #001B3D;
   color: #FFFFFF;
   min-height: 100vh;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/bricks.png');
+  background-repeat: repeat;
+  background-size: 400px;
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: 0;
 }
 
 #root {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  position: relative;
+  z-index: 1;
 }
 
 input, textarea, select {
