@@ -9,7 +9,6 @@ body {
   background-color: #001B3D;
   color: #FFFFFF;
   min-height: 100vh;
-  position: relative;
 }
 
 body::before {
@@ -17,12 +16,12 @@ body::before {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   background-image: url('/bricks.png');
   background-repeat: repeat;
-  background-size: 400px;
-  opacity: 0.90;
+  background-size: 300px;
+  opacity: 0.2;
   pointer-events: none;
   z-index: 0;
 }
@@ -33,6 +32,23 @@ body::before {
   flex-direction: column;
   position: relative;
   z-index: 1;
+}
+
+input, textarea, select {
+  font-family: inherit;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: transparent;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
 input, textarea, select {
