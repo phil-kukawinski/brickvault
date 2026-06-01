@@ -216,7 +216,7 @@ export default function CollectionScreen() {
               </>
             )}
 
-            <a href={`https://www.brickeconomy.com/search?q=${selected.set_number.split('-')[0]}`}
+            <a href={`https://www.brickeconomy.com/set/${selected.set_number}`}
   target="_blank"
   rel="noopener noreferrer"
   style={styles.marketBtn}
