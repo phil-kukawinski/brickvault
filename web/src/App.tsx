@@ -6,6 +6,8 @@ import RegisterScreen from './screens/RegisterScreen'
 import HomeScreen from './screens/HomeScreen'
 import CollectionScreen from './screens/CollectionScreen'
 import ScanScreen from './screens/ScanScreen'
+import ProfileScreen from './screens/ProfileScreen'
+import SearchHistoryScreen from './screens/SearchHistoryScreen'
 
 function App() {
   const [session, setSession] = useState<any>(null)
@@ -37,6 +39,8 @@ function App() {
       <Route path="/" element={session ? <HomeScreen /> : <Navigate to="/login" />} />
       <Route path="/collection" element={session ? <CollectionScreen /> : <Navigate to="/login" />} />
       <Route path="/scan" element={session ? <ScanScreen /> : <Navigate to="/login" />} />
+      <Route path="/profile" element={session ? <ProfileScreen /> : <Navigate to="/login" />} />
+      <Route path="/history" element={session ? <SearchHistoryScreen /> : <Navigate to="/login" />} />
     </Routes>
   )
 }
