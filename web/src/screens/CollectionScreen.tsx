@@ -151,8 +151,11 @@ export default function CollectionScreen() {
 
       {selected && (
         <div style={styles.modal} onClick={() => setSelected(null)}>
-          <div style={styles.modalCard} onClick={e => e.stopPropagation()}>
-            {selected.image_url && (
+           <div style={styles.modalCard} onClick={e => e.stopPropagation()}>
+    <div style={styles.modalHeader}>
+      <button style={styles.closeBtn} onClick={() => setSelected(null)}>✕</button>
+    </div>
+    {selected.image_url && (
               <img src={selected.image_url} alt={selected.name} style={styles.modalImage} />
             )}
             <h2 style={styles.modalName}>{selected.name}</h2>
@@ -523,5 +526,18 @@ const styles: Record<string, React.CSSProperties> = {
     textAlign: 'center',
     textDecoration: 'none',
     boxSizing: 'border-box'
+  },
+  modalHeader: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    marginBottom: '8px'
+  },
+  closeBtn: {
+    background: 'none',
+    border: 'none',
+    color: 'rgba(255,255,255,0.6)',
+    fontSize: '20px',
+    cursor: 'pointer',
+    padding: '4px 8px'
   },
 }
