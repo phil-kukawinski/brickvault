@@ -268,20 +268,21 @@ const styles: Record<string, React.CSSProperties> = {
     color: Colors.white,
     marginTop: '16px',
     marginBottom: '8px',
-    alignSelf: 'flex-start'
+    textAlign: 'center'
   },
   conditionRow: {
     display: 'flex',
     flexWrap: 'wrap',
     gap: '8px',
-    alignSelf: 'flex-start'
+    justifyContent: 'center',
+    marginBottom: '8px'
   },
   conditionBtn: {
     padding: '8px 14px',
     borderRadius: '20px',
     border: '1px solid rgba(255,255,255,0.2)',
     background: 'transparent',
-    color: 'rgba(255,255,255,0.7)',
+    color: Colors.white,
     fontSize: '13px',
     cursor: 'pointer'
   },
