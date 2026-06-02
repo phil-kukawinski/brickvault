@@ -6,22 +6,23 @@ export default function Footer() {
   return (
     <div style={styles.footer}>
       <div style={styles.links}>
-        {[
-          { label: 'Home', path: '/' },
-          { label: 'My Collection', path: '/collection' },
-          { label: 'Add a Set', path: '/scan' },
-          { label: 'Profile', path: '/profile' },
-          { label: 'Search History', path: '/history' },
-        ].map(item => (
-          <button
-            key={item.path}
-            style={styles.link}
-            onClick={() => navigate(item.path)}
-          >
-            {item.label}
-          </button>
-        ))}
-      </div>
+          {[
+            { label: 'Home', path: '/' },
+            { label: 'My Collection', path: '/collection' },
+            { label: 'Add a Set', path: '/scan' },
+            { label: 'Profile', path: '/profile' },
+            { label: 'Search History', path: '/history' },
+          ].map((item, index, arr) => (
+            <span key={item.path} style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+              <button style={styles.link} onClick={() => navigate(item.path)}>
+                {item.label}
+              </button>
+              {index < arr.length - 1 && (
+                <span style={styles.separator}>|</span>
+              )}
+            </span>
+          ))}
+        </div>
       <p style={styles.copy}>© {new Date().getFullYear()} BrickVault. All rights reserved.</p>
     </div>
   )
@@ -53,5 +54,9 @@ const styles: Record<string, React.CSSProperties> = {
   copy: {
     color: 'rgba(255,255,255,0.3)',
     fontSize: '12px'
-  }
+  },
+  separator: {
+    color: 'rgba(255,255,255,0.2)',
+    fontSize: '14px'
+  },
 }

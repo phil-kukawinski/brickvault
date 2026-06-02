@@ -65,7 +65,6 @@ export default function LoginScreen() {
 
 const styles: Record<string, React.CSSProperties> = {
   container: {
-    minHeight: '100vh',
     backgroundColor: 'transparent',
     display: 'flex',
     flexDirection: 'column',
