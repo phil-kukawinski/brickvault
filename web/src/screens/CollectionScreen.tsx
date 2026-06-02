@@ -15,6 +15,9 @@ type CollectionItem = {
   complete: boolean
   condition: 'sealed' | 'built' | 'partial' | 'incomplete' | null
   theme: string | null
+  retail_price: number | null
+  release_year: number | null
+  retired_year: number | null
   added_at: string
 }
 
@@ -160,8 +163,11 @@ export default function CollectionScreen() {
               <div style={styles.cardContent}>
                 <p style={styles.cardName}>{item.name}</p>
                 <p style={styles.cardDetail}>#{item.set_number}</p>
-                <p style={styles.cardDetail}>{item.piece_count} pieces</p>
-                {item.theme && (
+<p style={styles.cardDetail}>{item.piece_count} pieces</p>
+{item.release_year && (
+  <p style={styles.cardDetail}>Released: {item.release_year}{item.retired_year ? ` · Retired: ${item.retired_year}` : ''}</p>
+)}
+{item.theme && (
   <p style={styles.cardDetail}>{item.theme}</p>
 )}
                 <div style={styles.cardFooter}>

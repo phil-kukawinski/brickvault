@@ -76,3 +76,19 @@ export async function fetchSetPrice(setNum: string): Promise<number | null> {
     return null
   }
 }
+
+export async function fetchSetDetails(setNum: string): Promise<{ release_year: number | null, retired: boolean } | null> {
+  try {
+    const response = await fetch(`${BASE_URL}/sets/${setNum}/`, {
+      headers: { Authorization: `key ${REBRICKABLE_API_KEY}` }
+    })
+    if (!response.ok) return null
+    const data = await response.json()
+    return {
+      release_year: data.year ?? null,
+      retired: data.is_obsolete ?? false
+    }
+  } catch {
+    return null
+  }
+}
