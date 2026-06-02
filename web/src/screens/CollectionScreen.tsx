@@ -26,6 +26,7 @@ export default function CollectionScreen() {
   const [editCondition, setEditCondition] = useState<'sealed' | 'built' | 'partial' | 'incomplete'>('sealed')
   const [saving, setSaving] = useState(false)
   const navigate = useNavigate()
+  const [sort, setSort] = useState<'newest' | 'oldest' | 'name' | 'pieces'>('newest')
 
   useEffect(() => {
     fetchCollection()
@@ -87,7 +88,16 @@ export default function CollectionScreen() {
     setEditCondition(item.condition ?? 'sealed')
   }
 
-  const filtered = filter === 'all' ? items : items.filter(i => i.status === filter)
+  const filtered = (filter === 'all' ? items : items.filter(i => i.status === filter))
+    .sort((a, b) => {
+      switch (sort) {
+        case 'newest': return new Date(b.added_at).getTime() - new Date(a.added_at).getTime()
+        case 'oldest': return new Date(a.added_at).getTime() - new Date(b.added_at).getTime()
+        case 'name': return a.name.localeCompare(b.name)
+        case 'pieces': return b.piece_count - a.piece_count
+        default: return 0
+      }
+    })
 
   return (
     <div style={styles.container}>
@@ -111,6 +121,19 @@ export default function CollectionScreen() {
             onClick={() => setFilter(f)}
           >
             {f.charAt(0).toUpperCase() + f.slice(1)}
+          </button>
+        ))}
+      </div>
+
+      <div style={styles.sortRow}>
+        <span style={styles.sortLabel}>Sort:</span>
+        {(['newest', 'oldest', 'name', 'pieces'] as const).map(s => (
+          <button
+            key={s}
+            style={{ ...styles.sortBtn, ...(sort === s ? styles.sortBtnActive : {}) }}
+            onClick={() => setSort(s)}
+          >
+            {s.charAt(0).toUpperCase() + s.slice(1)}
           </button>
         ))}
       </div>
@@ -541,5 +564,32 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '20px',
     cursor: 'pointer',
     padding: '4px 8px'
+  },
+  sortRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '0 24px 12px',
+    flexWrap: 'wrap' as const
+  },
+  sortLabel: {
+    fontSize: '14px',
+    color: 'rgba(255,255,255,0.5)',
+    marginRight: '4px'
+  },
+  sortBtn: {
+    padding: '6px 14px',
+    borderRadius: '20px',
+    border: '1px solid rgba(255,255,255,0.2)',
+    backgroundColor: 'rgba(0,8,20,0.6)',
+    color: 'rgba(255,255,255,0.7)',
+    fontSize: '13px',
+    cursor: 'pointer'
+  },
+  sortBtnActive: {
+    backgroundColor: Colors.yellow,
+    borderColor: Colors.yellow,
+    color: Colors.text.onYellow,
+    fontWeight: 'bold'
   },
 }
