@@ -2,6 +2,8 @@ import { useNavigate } from 'react-router-dom'
 
 export default function Footer() {
   const navigate = useNavigate()
+  const isMobile = window.innerWidth <= 768
+  if (isMobile) return null
 
   return (
     <div style={styles.footer}>
