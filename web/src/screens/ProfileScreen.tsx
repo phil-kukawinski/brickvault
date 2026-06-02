@@ -1,3 +1,385 @@
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { supabase } from '../lib/supabase'
+import { Colors } from '../lib/theme'
+import Header from '../components/Header'
+import Footer from '../components/Footer'
+
+const THEMES = [
+  'Star Wars', 'Technic', 'City', 'Creator', 'Harry Potter',
+  'Marvel', 'DC', 'Architecture', 'Ideas', 'Ninjago',
+  'Friends', 'Minecraft', 'Speed Champions', 'Icons', 'Art'
+]
+
+type Profile = {
+  id: string
+  username: string
+  full_name: string | null
+  location: string | null
+  bio: string | null
+  collecting_goals: string | null
+  preferred_condition: string | null
+  favorite_themes: string[] | null
+}
+
 export default function ProfileScreen() {
-  return <div>Profile</div>
+  const [profile, setProfile] = useState<Profile | null>(null)
+  const [fullName, setFullName] = useState('')
+  const [location, setLocation] = useState('')
+  const [bio, setBio] = useState('')
+  const [collectingGoal, setCollectingGoal] = useState('mixed')
+  const [preferredCondition, setPreferredCondition] = useState('any')
+  const [favoriteThemes, setFavoriteThemes] = useState<string[]>([])
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+  const [stats, setStats] = useState({ owned: 0, wishlist: 0, total: 0 })
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    fetchProfile()
+    fetchStats()
+  }, [])
+
+  async function fetchProfile() {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    const { data } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single()
+    if (data) {
+      setProfile(data)
+      setFullName(data.full_name || '')
+      setLocation(data.location || '')
+      setBio(data.bio || '')
+      setCollectingGoal(data.collecting_goals || 'mixed')
+      setPreferredCondition(data.preferred_condition || 'any')
+      setFavoriteThemes(data.favorite_themes || [])
+    }
+    setLoading(false)
+  }
+
+  async function fetchStats() {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    const { data } = await supabase
+      .from('collection')
+      .select('status')
+      .eq('user_id', user.id)
+    if (data) {
+      const owned = data.filter(i => i.status === 'owned').length
+      const wishlist = data.filter(i => i.status === 'wishlist').length
+      setStats({ owned, wishlist, total: data.length })
+    }
+  }
+
+  function toggleTheme(theme: string) {
+    setFavoriteThemes(prev =>
+      prev.includes(theme) ? prev.filter(t => t !== theme) : [...prev, theme]
+    )
+  }
+
+  async function handleSave(e: React.FormEvent) {
+    e.preventDefault()
+    if (!profile) return
+    setSaving(true)
+    await supabase
+      .from('profiles')
+      .update({
+        full_name: fullName.trim() || null,
+        location: location.trim() || null,
+        bio: bio.trim() || null,
+        collecting_goals: collectingGoal,
+        preferred_condition: preferredCondition,
+        favorite_themes: favoriteThemes.length > 0 ? favoriteThemes : null
+      })
+      .eq('id', profile.id)
+    setSaving(false)
+    setSaved(true)
+    setTimeout(() => setSaved(false), 3000)
+  }
+
+  if (loading) {
+    return (
+      <div style={styles.container}>
+        <Header />
+        <div style={styles.centered}>
+          <p style={{ color: Colors.yellow }}>Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div style={styles.container}>
+      <Header />
+      <div style={styles.content}>
+        <h1 style={styles.title}>My Profile</h1>
+
+        <div style={styles.statsRow}>
+          <div style={styles.statCard}>
+            <p style={styles.statNum}>{stats.owned}</p>
+            <p style={styles.statLabel}>Owned</p>
+          </div>
+          <div style={styles.statCard}>
+            <p style={styles.statNum}>{stats.wishlist}</p>
+            <p style={styles.statLabel}>Wishlist</p>
+          </div>
+          <div style={styles.statCard}>
+            <p style={styles.statNum}>{stats.total}</p>
+            <p style={styles.statLabel}>Total</p>
+          </div>
+        </div>
+
+        <form onSubmit={handleSave} style={styles.form}>
+          <p style={styles.sectionLabel}>Username</p>
+          <div style={styles.staticField}>{profile?.username}</div>
+
+          <p style={styles.sectionLabel}>Full Name</p>
+          <input
+            style={styles.input}
+            type="text"
+            placeholder="Full Name"
+            value={fullName}
+            onChange={e => setFullName(e.target.value)}
+          />
+
+          <p style={styles.sectionLabel}>Location</p>
+          <input
+            style={styles.input}
+            type="text"
+            placeholder="e.g. Detroit, MI"
+            value={location}
+            onChange={e => setLocation(e.target.value)}
+          />
+
+          <p style={styles.sectionLabel}>Bio</p>
+          <textarea
+            style={{ ...styles.input, height: '80px', resize: 'none' }}
+            placeholder="Tell other collectors about yourself..."
+            value={bio}
+            onChange={e => setBio(e.target.value)}
+          />
+
+          <p style={styles.sectionLabel}>I collect to...</p>
+          <div style={styles.optionRow}>
+            {[
+              { value: 'completionist', label: 'Complete sets' },
+              { value: 'investor', label: 'Invest' },
+              { value: 'builder', label: 'Build' },
+              { value: 'displayer', label: 'Display' },
+              { value: 'mixed', label: 'All of the above' }
+            ].map(opt => (
+              <button
+                key={opt.value}
+                type="button"
+                style={{
+                  ...styles.optionBtn,
+                  ...(collectingGoal === opt.value ? styles.optionBtnActive : {})
+                }}
+                onClick={() => setCollectingGoal(opt.value)}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+
+          <p style={styles.sectionLabel}>I prefer sets that are...</p>
+          <div style={styles.optionRow}>
+            {[
+              { value: 'sealed', label: 'Sealed' },
+              { value: 'built', label: 'Built' },
+              { value: 'any', label: 'Either' }
+            ].map(opt => (
+              <button
+                key={opt.value}
+                type="button"
+                style={{
+                  ...styles.optionBtn,
+                  ...(preferredCondition === opt.value ? styles.optionBtnActive : {})
+                }}
+                onClick={() => setPreferredCondition(opt.value)}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+
+          <p style={styles.sectionLabel}>Favorite themes</p>
+          <div style={styles.themeGrid}>
+            {THEMES.map(theme => (
+              <button
+                key={theme}
+                type="button"
+                style={{
+                  ...styles.themeBtn,
+                  ...(favoriteThemes.includes(theme) ? styles.themeBtnActive : {})
+                }}
+                onClick={() => toggleTheme(theme)}
+              >
+                {theme}
+              </button>
+            ))}
+          </div>
+
+          <button style={styles.saveBtn} type="submit" disabled={saving}>
+            {saving ? 'Saving...' : saved ? '✓ Saved!' : 'Save Changes'}
+          </button>
+        </form>
+
+        <button style={styles.collectionBtn} onClick={() => navigate('/collection')}>
+          View My Collection
+        </button>
+      </div>
+      <Footer />
+    </div>
+  )
+}
+
+const styles: Record<string, React.CSSProperties> = {
+  container: {
+    minHeight: '100vh',
+    display: 'flex',
+    flexDirection: 'column'
+  },
+  content: {
+    padding: '24px',
+    maxWidth: '600px',
+    margin: '0 auto',
+    width: '100%',
+    flex: 1
+  },
+  centered: {
+    flex: 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  title: {
+    fontSize: '28px',
+    fontWeight: 'bold',
+    color: Colors.white,
+    marginBottom: '24px'
+  },
+  statsRow: {
+    display: 'flex',
+    gap: '12px',
+    marginBottom: '32px'
+  },
+  statCard: {
+    flex: 1,
+    backgroundColor: 'rgba(0,8,20,0.6)',
+    border: '1px solid rgba(255,255,255,0.12)',
+    borderRadius: '12px',
+    padding: '16px',
+    textAlign: 'center'
+  },
+  statNum: {
+    fontSize: '28px',
+    fontWeight: 'bold',
+    color: Colors.yellow,
+    marginBottom: '4px'
+  },
+  statLabel: {
+    fontSize: '13px',
+    color: 'rgba(255,255,255,0.6)'
+  },
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px'
+  },
+  sectionLabel: {
+    fontSize: '14px',
+    fontWeight: 'bold',
+    color: 'rgba(255,255,255,0.6)',
+    marginTop: '16px',
+    marginBottom: '4px',
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px'
+  },
+  staticField: {
+    backgroundColor: 'rgba(0,8,20,0.4)',
+    border: '1px solid rgba(255,255,255,0.1)',
+    borderRadius: '8px',
+    padding: '14px',
+    fontSize: '16px',
+    color: 'rgba(255,255,255,0.5)'
+  },
+  input: {
+    backgroundColor: 'rgba(0,8,20,0.6)',
+    border: '1px solid rgba(255,255,255,0.2)',
+    borderRadius: '8px',
+    padding: '14px',
+    fontSize: '16px',
+    color: Colors.white,
+    outline: 'none',
+    width: '100%'
+  },
+  optionRow: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '8px',
+    marginBottom: '8px'
+  },
+  optionBtn: {
+    padding: '10px 16px',
+    borderRadius: '20px',
+    border: '1px solid rgba(255,255,255,0.2)',
+    backgroundColor: 'rgba(0,8,20,0.6)',
+    color: Colors.white,
+    fontSize: '14px',
+    cursor: 'pointer'
+  },
+  optionBtnActive: {
+    backgroundColor: Colors.yellow,
+    borderColor: Colors.yellow,
+    color: Colors.text.onYellow,
+    fontWeight: 'bold'
+  },
+  themeGrid: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '8px',
+    marginBottom: '8px'
+  },
+  themeBtn: {
+    padding: '8px 14px',
+    borderRadius: '20px',
+    border: '1px solid rgba(255,255,255,0.2)',
+    backgroundColor: 'rgba(0,8,20,0.6)',
+    color: Colors.white,
+    fontSize: '13px',
+    cursor: 'pointer'
+  },
+  themeBtnActive: {
+    backgroundColor: Colors.yellow,
+    borderColor: Colors.yellow,
+    color: Colors.text.onYellow,
+    fontWeight: 'bold'
+  },
+  saveBtn: {
+    backgroundColor: Colors.yellow,
+    color: Colors.text.onYellow,
+    border: 'none',
+    borderRadius: '8px',
+    padding: '16px',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    marginTop: '24px'
+  },
+  collectionBtn: {
+    width: '100%',
+    padding: '16px',
+    borderRadius: '8px',
+    border: '1px solid rgba(255,255,255,0.2)',
+    backgroundColor: 'rgba(0,8,20,0.6)',
+    color: Colors.white,
+    fontSize: '16px',
+    cursor: 'pointer',
+    marginTop: '12px'
+  }
 }
