@@ -240,7 +240,6 @@ export default function ProfileScreen() {
 
 const styles: Record<string, React.CSSProperties> = {
   container: {
-    minHeight: '100vh',
     display: 'flex',
     flexDirection: 'column'
   },

@@ -68,6 +68,7 @@ const styles: Record<string, React.CSSProperties> = {
     minHeight: '100vh',
     backgroundColor: 'transparent',
     display: 'flex',
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
     padding: '24px'

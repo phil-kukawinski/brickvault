@@ -248,9 +248,8 @@ export default function CollectionScreen() {
 
 const styles: Record<string, React.CSSProperties> = {
   container: {
-    minHeight: '100vh',
-    backgroundColor: 'transparent',
-    color: Colors.white
+    display: 'flex',
+    flexDirection: 'column'
   },
   header: {
     padding: '8px 24px 16px',

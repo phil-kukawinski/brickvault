@@ -254,6 +254,7 @@ const styles: Record<string, React.CSSProperties> = {
   container: {
     minHeight: '100vh',
     display: 'flex',
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
     padding: '24px'

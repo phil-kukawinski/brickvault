@@ -118,7 +118,6 @@ export default function SearchHistoryScreen() {
 
 const styles: Record<string, React.CSSProperties> = {
   container: {
-    minHeight: '100vh',
     display: 'flex',
     flexDirection: 'column'
   },
@@ -133,12 +132,15 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '24px'
+    marginBottom: '24px',
+    textAlign: 'center' as const
   },
   title: {
     fontSize: '28px',
     fontWeight: 'bold',
-    color: Colors.white
+    color: Colors.white,
+    textAlign: 'center' as const,
+    flex: 1
   },
   clearBtn: {
     background: 'none',

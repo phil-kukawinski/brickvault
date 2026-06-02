@@ -67,8 +67,9 @@ const styles: Record<string, React.CSSProperties> = {
   header: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: '8px 24px 0px'
+    justifyContent: 'center',
+    padding: '8px 24px 0px',
+    position: 'relative'
   },
   hamburger: {
     background: 'none',
@@ -77,7 +78,11 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '24px',
     cursor: 'pointer',
     padding: '4px',
-    width: '40px'
+    width: '40px',
+    position: 'absolute',
+    right: '24px',
+    top: '50%',
+    transform: 'translateY(-50%)'
   },
   logoBtn: {
     background: 'none',
