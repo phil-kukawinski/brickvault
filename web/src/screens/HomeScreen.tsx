@@ -37,7 +37,7 @@ export default function HomeScreen() {
 
       <div style={styles.grid}>
         <button style={styles.card} onClick={() => navigate('/collection')}>
-          <span style={styles.cardIcon}>📦</span>
+          <span style={styles.cardIcon}>🧱</span>
           <span style={styles.cardTitle}>My Collection</span>
           <span style={styles.cardSubtitle}>View your sets</span>
         </button>
