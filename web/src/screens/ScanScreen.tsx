@@ -55,6 +55,15 @@ export default function ScanScreen() {
     if (!foundSet) return
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
+
+    // Check for duplicate
+    if (ownedSetNumbers.includes(foundSet.set_num)) {
+      const confirmed = window.confirm(
+        `You already have ${foundSet.name} in your vault. Add another copy anyway?`
+      )
+      if (!confirmed) return
+    }
+
     const { error } = await supabase.from('collection').insert({
       user_id: user.id,
       set_number: foundSet.set_num,
@@ -135,6 +144,11 @@ useEffect(() => {
           <p style={styles.setDetail}>Set #{foundSet.set_num}</p>
           <p style={styles.setDetail}>{foundSet.num_parts} pieces · {foundSet.year}</p>
 
+          {ownedSetNumbers.includes(foundSet.set_num) && (
+            <div style={styles.duplicateWarning}>
+              ⚠️ This set is already in your vault
+            </div>
+          )}
           <button style={styles.addBtn} onClick={() => addToCollection('owned')}>
             📦 Add to Collection
           </button>
@@ -392,5 +406,15 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '2px 8px',
     borderRadius: '12px',
     whiteSpace: 'nowrap' as const
+  },
+  duplicateWarning: {
+    backgroundColor: 'rgba(251,224,45,0.1)',
+    border: '1px solid rgba(251,224,45,0.3)',
+    borderRadius: '8px',
+    padding: '10px 16px',
+    color: Colors.yellow,
+    fontSize: '14px',
+    marginTop: '16px',
+    textAlign: 'center' as const
   },
 }
