@@ -15,10 +15,10 @@ export default function HomeScreen() {
       if (user) {
         const { data } = await supabase
           .from('profiles')
-          .select('username')
+          .select('username, full_name')
           .eq('id', user.id)
           .single()
-        if (data) setUsername(data.username)
+        if (data) setUsername(data.full_name || data.username)
       }
     }
     fetchProfile()
