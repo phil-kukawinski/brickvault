@@ -83,6 +83,21 @@ export default function ScanScreen() {
     setCondition('sealed')
   }
 
+  const [ownedSetNumbers, setOwnedSetNumbers] = useState<string[]>([])
+
+useEffect(() => {
+  async function fetchOwned() {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    const { data } = await supabase
+      .from('collection')
+      .select('set_number')
+      .eq('user_id', user.id)
+    if (data) setOwnedSetNumbers(data.map(i => i.set_number))
+  }
+  fetchOwned()
+}, [])
+
   return (
     <div style={styles.container}>
         <Header />
@@ -157,9 +172,14 @@ export default function ScanScreen() {
                 <img src={set.set_img_url} alt={set.name} style={styles.rowImage} />
               )}
               <div style={styles.rowContent}>
-                <p style={styles.rowName}>{set.name}</p>
-                <p style={styles.rowDetail}>#{set.set_num} · {set.num_parts} pcs · {set.year}</p>
-              </div>
+  <div style={styles.rowNameRow}>
+    <p style={styles.rowName}>{set.name}</p>
+    {ownedSetNumbers.includes(set.set_num) && (
+      <span style={styles.ownedBadge}>In Vault</span>
+    )}
+  </div>
+  <p style={styles.rowDetail}>#{set.set_num} · {set.num_parts} pcs · {set.year}</p>
+</div>
             </button>
           ))}
         </div>
@@ -357,5 +377,20 @@ const styles: Record<string, React.CSSProperties> = {
   rowDetail: {
     fontSize: '13px',
     color: 'rgba(255,255,255,0.6)'
-  }
+  },
+  rowNameRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    flexWrap: 'wrap' as const
+  },
+  ownedBadge: {
+    backgroundColor: 'rgba(251,224,45,0.15)',
+    color: Colors.yellow,
+    fontSize: '11px',
+    fontWeight: 'bold',
+    padding: '2px 8px',
+    borderRadius: '12px',
+    whiteSpace: 'nowrap' as const
+  },
 }
