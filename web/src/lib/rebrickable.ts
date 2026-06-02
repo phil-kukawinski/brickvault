@@ -9,6 +9,7 @@ export type LegoSet = {
   num_parts: number
   set_img_url: string
   set_url: string
+  theme?: string
 }
 
 export async function fetchSetByBarcode(barcode: string): Promise<LegoSet | null> {
@@ -47,5 +48,18 @@ export async function searchSets(query: string): Promise<LegoSet[]> {
     return data.results as LegoSet[]
   } catch {
     return []
+  }
+}
+
+export async function fetchThemeById(themeId: number): Promise<string | null> {
+  try {
+    const response = await fetch(`${BASE_URL}/themes/${themeId}/`, {
+      headers: { Authorization: `key ${REBRICKABLE_API_KEY}` }
+    })
+    if (!response.ok) return null
+    const data = await response.json()
+    return data.name as string
+  } catch {
+    return null
   }
 }

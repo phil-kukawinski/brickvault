@@ -14,6 +14,7 @@ type CollectionItem = {
   status: 'owned' | 'wishlist'
   complete: boolean
   condition: 'sealed' | 'built' | 'partial' | 'incomplete' | null
+  theme: string | null
   added_at: string
 }
 
@@ -26,7 +27,7 @@ export default function CollectionScreen() {
   const [editCondition, setEditCondition] = useState<'sealed' | 'built' | 'partial' | 'incomplete'>('sealed')
   const [saving, setSaving] = useState(false)
   const navigate = useNavigate()
-  const [sort, setSort] = useState<'newest' | 'oldest' | 'name' | 'pieces'>('newest')
+  const [sort, setSort] = useState<'newest' | 'oldest' | 'name' | 'pieces' | 'theme'>('newest')
 
   useEffect(() => {
     fetchCollection()
@@ -95,6 +96,7 @@ export default function CollectionScreen() {
         case 'oldest': return new Date(a.added_at).getTime() - new Date(b.added_at).getTime()
         case 'name': return a.name.localeCompare(b.name)
         case 'pieces': return b.piece_count - a.piece_count
+        case 'theme': return (a.theme || 'zzz').localeCompare(b.theme || 'zzz')
         default: return 0
       }
     })
@@ -127,7 +129,7 @@ export default function CollectionScreen() {
 
       <div style={styles.sortRow}>
         <span style={styles.sortLabel}>Sort:</span>
-        {(['newest', 'oldest', 'name', 'pieces'] as const).map(s => (
+        {(['newest', 'oldest', 'name', 'pieces', 'theme'] as const).map(s => (
           <button
             key={s}
             style={{ ...styles.sortBtn, ...(sort === s ? styles.sortBtnActive : {}) }}
@@ -159,6 +161,9 @@ export default function CollectionScreen() {
                 <p style={styles.cardName}>{item.name}</p>
                 <p style={styles.cardDetail}>#{item.set_number}</p>
                 <p style={styles.cardDetail}>{item.piece_count} pieces</p>
+                {item.theme && (
+  <p style={styles.cardDetail}>{item.theme}</p>
+)}
                 <div style={styles.cardFooter}>
                   <span style={{ ...styles.badge, ...(item.status === 'owned' ? styles.badgeOwned : styles.badgeWishlist) }}>
                     {item.status === 'owned' ? '📦 Owned' : '⭐ Wishlist'}
