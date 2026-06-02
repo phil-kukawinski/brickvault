@@ -219,7 +219,11 @@ export default function ScanScreen() {
           )}
           <p style={styles.setName}>{foundSet.name}</p>
           <p style={styles.setDetail}>Set #{foundSet.set_num}</p>
-          <p style={styles.setDetail}>{foundSet.num_parts} pieces · {foundSet.year}</p>
+          <p style={styles.setDetail}>{foundSet.num_parts} pieces</p>
+          <p style={styles.setDetail}>Released: {foundSet.year}</p>
+          {foundSet.is_obsolete && (
+            <p style={{ ...styles.setDetail, color: '#FF8A65' }}>Retired</p>
+          )}
 
           {ownedSetNumbers.includes(foundSet.set_num) && (
             <div style={styles.duplicateWarning}>

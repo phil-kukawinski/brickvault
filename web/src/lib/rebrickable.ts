@@ -9,6 +9,7 @@ export type LegoSet = {
   num_parts: number
   set_img_url: string
   set_url: string
+  is_obsolete?: boolean
   theme?: string
 }
 
