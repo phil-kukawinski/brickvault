@@ -6,6 +6,7 @@ import type { LegoSet } from '../lib/rebrickable'
 import { Colors } from '../lib/theme'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import { BrowserMultiFormatReader } from '@zxing/browser'
 
 export default function ScanScreen() {
   const [input, setInput] = useState('')
@@ -13,27 +14,31 @@ export default function ScanScreen() {
   const [searching, setSearching] = useState(false)
   const [foundSet, setFoundSet] = useState<LegoSet | null>(null)
   const [condition, setCondition] = useState<'sealed' | 'built' | 'partial' | 'incomplete'>('sealed')
+  const [scanning, setScanning] = useState(false)
+  const [scanError, setScanError] = useState('')
+  const [ownedSetNumbers, setOwnedSetNumbers] = useState<string[]>([])
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const readerRef = useRef<BrowserMultiFormatReader | null>(null)
   const navigate = useNavigate()
 
-  const handleSearch = async () => {
-    if (!input.trim()) return
-    setSearching(true)
-    setResults([])
-    setFoundSet(null)
-
-    const bySetNum = await fetchSetBySetNum(
-      input.includes('-') ? input : `${input}-1`
-    )
-    if (bySetNum) {
-      setSearching(false)
-      setFoundSet(bySetNum)
-      return
+  useEffect(() => {
+    fetchOwned()
+    return () => {
+      if (readerRef.current) {
+        BrowserMultiFormatReader.releaseAllStreams()
+      }
     }
+  }, [])
 
-    const res = await searchSets(input)
-    setSearching(false)
-    setResults(res)
+  async function fetchOwned() {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    const { data } = await supabase
+      .from('collection')
+      .select('set_number')
+      .eq('user_id', user.id)
+    if (data) setOwnedSetNumbers(data.map(i => i.set_number))
   }
 
   useEffect(() => {
@@ -51,12 +56,75 @@ export default function ScanScreen() {
     }
   }, [input])
 
+  const handleSearch = async () => {
+    if (!input.trim()) return
+    await handleSearchWithInput(input)
+  }
+
+  async function handleSearchWithInput(value: string) {
+    if (!value.trim()) return
+    setSearching(true)
+    setResults([])
+    setFoundSet(null)
+
+    const bySetNum = await fetchSetBySetNum(
+      value.includes('-') ? value : `${value}-1`
+    )
+    if (bySetNum) {
+      setSearching(false)
+      setFoundSet(bySetNum)
+      return
+    }
+
+    const res = await searchSets(value)
+    setSearching(false)
+    setResults(res)
+  }
+
+  async function startScanner() {
+    setScanError('')
+    setScanning(true)
+    try {
+      readerRef.current = new BrowserMultiFormatReader()
+      const devices = await BrowserMultiFormatReader.listVideoInputDevices()
+      if (devices.length === 0) {
+        setScanError('No camera found on this device.')
+        setScanning(false)
+        return
+      }
+      const deviceId = devices[devices.length - 1].deviceId
+      await readerRef.current.decodeFromVideoDevice(
+        deviceId,
+        videoRef.current!,
+        async (result, _err) => {
+          if (result) {
+            stopScanner()
+            const text = result.getText()
+            setInput(text)
+            setScanning(false)
+            await handleSearchWithInput(text)
+          }
+        }
+      )
+    } catch {
+      setScanError('Camera access denied or not available.')
+      setScanning(false)
+    }
+  }
+
+  function stopScanner() {
+    if (readerRef.current) {
+      BrowserMultiFormatReader.releaseAllStreams()
+      readerRef.current = null
+    }
+    setScanning(false)
+  }
+
   async function addToCollection(status: 'owned' | 'wishlist') {
     if (!foundSet) return
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
 
-    // Check for duplicate
     if (ownedSetNumbers.includes(foundSet.set_num)) {
       const confirmed = window.confirm(
         `You already have ${foundSet.name} in your vault. Add another copy anyway?`
@@ -92,24 +160,9 @@ export default function ScanScreen() {
     setCondition('sealed')
   }
 
-  const [ownedSetNumbers, setOwnedSetNumbers] = useState<string[]>([])
-
-useEffect(() => {
-  async function fetchOwned() {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-    const { data } = await supabase
-      .from('collection')
-      .select('set_number')
-      .eq('user_id', user.id)
-    if (data) setOwnedSetNumbers(data.map(i => i.set_number))
-  }
-  fetchOwned()
-}, [])
-
   return (
     <div style={styles.container}>
-        <Header />
+      <Header />
       <div style={styles.header}>
         <button style={styles.backBtn} onClick={() => navigate('/')}>← Back</button>
         <h1 style={styles.title}>Add a Set</h1>
@@ -127,6 +180,23 @@ useEffect(() => {
         />
         <button style={styles.searchBtn} onClick={handleSearch}>Search</button>
       </div>
+
+      <button style={styles.scanBtn} onClick={startScanner}>
+        📷 Scan Barcode
+      </button>
+
+      {scanError && (
+        <p style={styles.scanError}>{scanError}</p>
+      )}
+
+      {scanning && (
+        <div style={styles.scannerContainer}>
+          <video ref={videoRef} style={styles.video} autoPlay playsInline muted />
+          <button style={styles.stopScanBtn} onClick={stopScanner}>
+            Stop Scanning
+          </button>
+        </div>
+      )}
 
       {searching && (
         <div style={styles.centered}>
@@ -149,6 +219,7 @@ useEffect(() => {
               ⚠️ This set is already in your vault
             </div>
           )}
+
           <button style={styles.addBtn} onClick={() => addToCollection('owned')}>
             📦 Add to Collection
           </button>
@@ -186,14 +257,14 @@ useEffect(() => {
                 <img src={set.set_img_url} alt={set.name} style={styles.rowImage} />
               )}
               <div style={styles.rowContent}>
-  <div style={styles.rowNameRow}>
-    <p style={styles.rowName}>{set.name}</p>
-    {ownedSetNumbers.includes(set.set_num) && (
-      <span style={styles.ownedBadge}>In Vault</span>
-    )}
-  </div>
-  <p style={styles.rowDetail}>#{set.set_num} · {set.num_parts} pcs · {set.year}</p>
-</div>
+                <div style={styles.rowNameRow}>
+                  <p style={styles.rowName}>{set.name}</p>
+                  {ownedSetNumbers.includes(set.set_num) && (
+                    <span style={styles.ownedBadge}>In Vault</span>
+                  )}
+                </div>
+                <p style={styles.rowDetail}>#{set.set_num} · {set.num_parts} pcs · {set.year}</p>
+              </div>
             </button>
           ))}
         </div>
@@ -204,7 +275,7 @@ useEffect(() => {
           <p style={{ color: 'rgba(255,255,255,0.6)' }}>No results found. Try a different search.</p>
         </div>
       )}
-    <Footer />
+      <Footer />
     </div>
   )
 }
@@ -215,7 +286,7 @@ const styles: Record<string, React.CSSProperties> = {
     color: Colors.white
   },
   header: {
-    padding: '8px 24px 16px',
+    padding: '8px 24px 16px'
   },
   backBtn: {
     background: 'none',
@@ -382,6 +453,12 @@ const styles: Record<string, React.CSSProperties> = {
   rowContent: {
     flex: 1
   },
+  rowNameRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    flexWrap: 'wrap' as const
+  },
   rowName: {
     fontSize: '15px',
     fontWeight: 'bold',
@@ -391,12 +468,6 @@ const styles: Record<string, React.CSSProperties> = {
   rowDetail: {
     fontSize: '13px',
     color: 'rgba(255,255,255,0.6)'
-  },
-  rowNameRow: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    flexWrap: 'wrap' as const
   },
   ownedBadge: {
     backgroundColor: 'rgba(251,224,45,0.15)',
@@ -417,4 +488,46 @@ const styles: Record<string, React.CSSProperties> = {
     marginTop: '16px',
     textAlign: 'center' as const
   },
+  scanBtn: {
+    display: 'block',
+    width: 'calc(100% - 48px)',
+    margin: '0 24px 8px',
+    padding: '14px',
+    borderRadius: '8px',
+    border: '1px solid rgba(255,255,255,0.2)',
+    backgroundColor: 'rgba(0,8,20,0.6)',
+    color: Colors.white,
+    fontSize: '15px',
+    cursor: 'pointer'
+  },
+  scannerContainer: {
+    margin: '0 24px',
+    borderRadius: '12px',
+    overflow: 'hidden',
+    position: 'relative' as const
+  },
+  video: {
+    width: '100%',
+    borderRadius: '12px',
+    display: 'block'
+  },
+  stopScanBtn: {
+    position: 'absolute' as const,
+    bottom: '16px',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    backgroundColor: 'rgba(0,8,20,0.8)',
+    color: Colors.yellow,
+    border: `1px solid ${Colors.yellow}`,
+    borderRadius: '20px',
+    padding: '10px 24px',
+    fontSize: '14px',
+    cursor: 'pointer'
+  },
+  scanError: {
+    color: '#ff6b6b',
+    fontSize: '14px',
+    textAlign: 'center' as const,
+    padding: '0 24px'
+  }
 }
