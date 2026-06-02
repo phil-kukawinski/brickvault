@@ -570,7 +570,9 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     gap: '8px',
     padding: '0 24px 12px',
-    flexWrap: 'wrap' as const
+    overflowX: 'auto' as const,
+    flexWrap: 'nowrap' as const,
+    scrollbarWidth: 'none' as const
   },
   sortLabel: {
     fontSize: '14px',

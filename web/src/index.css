@@ -69,3 +69,16 @@ button {
   appearance: none;
   background-color: transparent;
 }
+
+/* Minimum touch target size for mobile */
+@media (max-width: 768px) {
+  button, a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  input, textarea, select {
+    font-size: 16px; /* Prevents iOS zoom on focus */
+    min-height: 48px;
+  }
+}
