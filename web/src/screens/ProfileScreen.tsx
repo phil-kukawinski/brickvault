@@ -93,9 +93,10 @@ export default function ProfileScreen() {
       // Build theme pie chart data from owned sets only
       const themeCounts: Record<string, number> = {}
       data
-        .filter(i => i.status === 'owned' && i.theme)
+        .filter(i => i.status === 'owned')
         .forEach(i => {
-          themeCounts[i.theme] = (themeCounts[i.theme] || 0) + 1
+          const theme = i.theme || 'Other'
+          themeCounts[theme] = (themeCounts[theme] || 0) + 1
         })
 
       const chartData = Object.entries(themeCounts)
