@@ -63,3 +63,16 @@ export async function fetchThemeById(themeId: number): Promise<string | null> {
     return null
   }
 }
+
+export async function fetchSetPrice(setNum: string): Promise<number | null> {
+  try {
+    const response = await fetch(`${BASE_URL}/sets/${setNum}/`, {
+      headers: { Authorization: `key ${REBRICKABLE_API_KEY}` }
+    })
+    if (!response.ok) return null
+    const data = await response.json()
+    return data.retail_price ?? null
+  } catch {
+    return null
+  }
+}

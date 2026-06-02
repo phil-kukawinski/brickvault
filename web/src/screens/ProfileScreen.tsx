@@ -45,7 +45,7 @@ export default function ProfileScreen() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
-  const [stats, setStats] = useState({ owned: 0, wishlist: 0, total: 0, pieces: 0 })
+  const [stats, setStats] = useState({ owned: 0, wishlist: 0, total: 0, pieces: 0, retailTotal: 0 })
   const [themeData, setThemeData] = useState<ThemeData[]>([])
   const navigate = useNavigate()
 
@@ -79,7 +79,7 @@ export default function ProfileScreen() {
     if (!user) return
     const { data } = await supabase
       .from('collection')
-      .select('status, piece_count, theme')
+      .select('status, piece_count, theme, retail_price')
       .eq('user_id', user.id)
     if (data) {
       const owned = data.filter(i => i.status === 'owned').length
@@ -87,10 +87,12 @@ export default function ProfileScreen() {
       const pieces = data
         .filter(i => i.status === 'owned')
         .reduce((sum, i) => sum + (i.piece_count || 0), 0)
+      const retailTotal = data
+        .filter(i => i.status === 'owned' && i.retail_price)
+        .reduce((sum, i) => sum + (i.retail_price || 0), 0)
 
-      setStats({ owned, wishlist, total: data.length, pieces })
+      setStats({ owned, wishlist, total: data.length, pieces, retailTotal })
 
-      // Build theme pie chart data from owned sets only
       const themeCounts: Record<string, number> = {}
       data
         .filter(i => i.status === 'owned')
@@ -205,9 +207,20 @@ export default function ProfileScreen() {
 
         <div style={styles.valueCard}>
           <p style={styles.valueTitle}>💰 Collection Value</p>
-          <p style={styles.valueSubtitle}>
-            Market values are sourced from BrickEconomy. Click below to see your full collection's estimated value.
-          </p>
+          {stats.retailTotal > 0 ? (
+            <>
+              <p style={styles.valueAmount}>
+                ${stats.retailTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </p>
+              <p style={styles.valueSubtitle}>
+                Combined retail value of your owned sets. Secondary market values may be higher — check BrickEconomy for current prices.
+              </p>
+            </>
+          ) : (
+            <p style={styles.valueSubtitle}>
+              Add sets to your collection to see their retail value here.
+            </p>
+          )}
           <a
             href="https://www.brickeconomy.com"
             target="_blank"
@@ -510,5 +523,11 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '16px',
     cursor: 'pointer',
     marginTop: '12px'
-  }
+  },
+  valueAmount: {
+    fontSize: '36px',
+    fontWeight: 'bold',
+    color: Colors.yellow,
+    marginBottom: '8px'
+  },
 }

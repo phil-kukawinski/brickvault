@@ -6,7 +6,7 @@ import { Colors } from '../lib/theme'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import { BrowserMultiFormatReader } from '@zxing/browser'
-import { fetchSetBySetNum, searchSets, fetchThemeById } from '../lib/rebrickable'
+import { fetchSetBySetNum, searchSets, fetchThemeById, fetchSetPrice } from '../lib/rebrickable'
 
 export default function ScanScreen() {
   const [input, setInput] = useState('')
@@ -133,6 +133,7 @@ export default function ScanScreen() {
     }
 
     const theme = await fetchThemeById(foundSet.theme_id)
+    const retailPrice = await fetchSetPrice(foundSet.set_num)
 
     const { error } = await supabase.from('collection').insert({
       user_id: user.id,
@@ -142,7 +143,8 @@ export default function ScanScreen() {
       image_url: foundSet.set_img_url,
       status,
       condition: status === 'owned' ? condition : null,
-      theme: theme || null
+      theme: theme || null,
+      retail_price: retailPrice || null
     })
     if (!error) {
       await supabase.from('activity_log').insert({
