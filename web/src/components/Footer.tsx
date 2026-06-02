@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom'
-import { Colors } from '../lib/theme'
 
 export default function Footer() {
   const navigate = useNavigate()
