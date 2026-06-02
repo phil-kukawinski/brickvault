@@ -11,6 +11,8 @@ const NAV_ITEMS = [
 export default function BottomNav() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
+  const isMobile = window.innerWidth <= 768
+  if (!isMobile) return null
 
   return (
     <>
