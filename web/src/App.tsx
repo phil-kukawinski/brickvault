@@ -8,6 +8,7 @@ import CollectionScreen from './screens/CollectionScreen'
 import ScanScreen from './screens/ScanScreen'
 import ProfileScreen from './screens/ProfileScreen'
 import SearchHistoryScreen from './screens/SearchHistoryScreen'
+import LandingScreen from './screens/LandingScreen'
 
 function App() {
   const [session, setSession] = useState<any>(null)
@@ -34,13 +35,13 @@ function App() {
 
   return (
     <Routes>
+      <Route path="/" element={session ? <HomeScreen /> : <LandingScreen />} />
       <Route path="/login" element={!session ? <LoginScreen /> : <Navigate to="/" />} />
       <Route path="/register" element={!session ? <RegisterScreen /> : <Navigate to="/" />} />
-      <Route path="/" element={session ? <HomeScreen /> : <Navigate to="/login" />} />
-      <Route path="/collection" element={session ? <CollectionScreen /> : <Navigate to="/login" />} />
-      <Route path="/scan" element={session ? <ScanScreen /> : <Navigate to="/login" />} />
-      <Route path="/profile" element={session ? <ProfileScreen /> : <Navigate to="/login" />} />
-      <Route path="/history" element={session ? <SearchHistoryScreen /> : <Navigate to="/login" />} />
+      <Route path="/collection" element={session ? <CollectionScreen /> : <Navigate to="/" />} />
+      <Route path="/scan" element={session ? <ScanScreen /> : <Navigate to="/" />} />
+      <Route path="/profile" element={session ? <ProfileScreen /> : <Navigate to="/" />} />
+      <Route path="/history" element={session ? <SearchHistoryScreen /> : <Navigate to="/" />} />
     </Routes>
   )
 }
