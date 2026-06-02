@@ -65,6 +65,13 @@ export default function ScanScreen() {
       condition: status === 'owned' ? condition : null
     })
     if (!error) {
+      await supabase.from('activity_log').insert({
+        user_id: user.id,
+        action: status === 'owned' ? 'added_to_collection' : 'added_to_wishlist',
+        set_number: foundSet.set_num,
+        set_name: foundSet.name,
+        details: status === 'owned' ? `Condition: ${condition}` : null
+      })
       navigate('/collection')
     }
   }
