@@ -5,6 +5,7 @@ import { fetchSetBySetNum, searchSets } from '../lib/rebrickable'
 import type { LegoSet } from '../lib/rebrickable'
 import { Colors } from '../lib/theme'
 import Header from '../components/Header'
+import Footer from '../components/Footer'
 
 export default function ScanScreen() {
   const [input, setInput] = useState('')
@@ -162,6 +163,7 @@ export default function ScanScreen() {
           <p style={{ color: 'rgba(255,255,255,0.6)' }}>No results found. Try a different search.</p>
         </div>
       )}
+    <Footer />
     </div>
   )
 }

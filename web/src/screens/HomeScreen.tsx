@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { Colors } from '../lib/theme'
+import Footer from '../components/Footer'
 
 export default function HomeScreen() {
   const [username, setUsername] = useState('')
@@ -56,9 +57,12 @@ export default function HomeScreen() {
       <button style={styles.signOutButton} onClick={handleSignOut}>
         Sign Out
       </button>
+      
+    <Footer />
     </div>
   )
 }
+
 
 const styles: Record<string, React.CSSProperties> = {
   container: {

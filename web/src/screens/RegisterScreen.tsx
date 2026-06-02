@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { Colors } from '../lib/theme'
+import Footer from '../components/Footer'
 
 const THEMES = [
   'Star Wars', 'Technic', 'City', 'Creator', 'Harry Potter',
@@ -244,6 +245,7 @@ export default function RegisterScreen() {
           <Link to="/login" style={styles.link}>Sign in</Link>
         </p>
       </div>
+    <Footer />
     </div>
   )
 }

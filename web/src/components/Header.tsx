@@ -19,13 +19,12 @@ export default function Header() {
   return (
     <div style={styles.wrapper}>
       <div style={styles.header}>
-        <button style={styles.hamburger} onClick={() => setOpen(!open)}>
-          {open ? '✕' : '☰'}
-        </button>
         <button style={styles.logoBtn} onClick={() => goTo('/')}>
           <img src="/logo.png" alt="BrickVault" style={styles.logo} />
         </button>
-        <div style={{ width: '40px' }} />
+        <button style={styles.hamburger} onClick={() => setOpen(!open)}>
+          {open ? '✕' : '☰'}
+        </button>
       </div>
 
       {open && (
@@ -33,11 +32,11 @@ export default function Header() {
           <div style={styles.overlay} onClick={() => setOpen(false)} />
           <div style={styles.dropdown}>
             {[
-              { label: '🏠 Home', path: '/' },
-              { label: '📦 My Collection', path: '/collection' },
-              { label: '🔍 Add a Set', path: '/scan' },
-              { label: '👤 Profile', path: '/profile' },
-              { label: '🕐 Search History', path: '/history' },
+              { label: 'Home', path: '/' },
+              { label: 'My Collection', path: '/collection' },
+              { label: 'Add a Set', path: '/scan' },
+              { label: 'Profile', path: '/profile' },
+              { label: 'Search History', path: '/history' },
             ].map(item => (
               <button
                 key={item.path}
@@ -51,7 +50,7 @@ export default function Header() {
               style={{ ...styles.menuItem, ...styles.signOut }}
               onClick={handleSignOut}
             >
-              🚪 Sign Out
+              Sign Out
             </button>
           </div>
         </>
@@ -101,11 +100,11 @@ const styles: Record<string, React.CSSProperties> = {
   dropdown: {
     position: 'absolute',
     top: '100%',
-    left: 0,
     right: 0,
+    width: '240px',
     backgroundColor: '#001020',
     border: '1px solid rgba(255,255,255,0.1)',
-    borderTop: 'none',
+    borderRadius: '0 0 12px 12px',
     zIndex: 100,
     display: 'flex',
     flexDirection: 'column'
@@ -122,6 +121,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   signOut: {
     color: '#FBE02D',
-    opacity: 0.7
+    opacity: 0.7,
+    border: 'none'
   }
 }

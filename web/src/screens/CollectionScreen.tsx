@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { Colors } from '../lib/theme'
 import Header from '../components/Header'
+import Footer from '../components/Footer'
 
 type CollectionItem = {
   id: string
@@ -239,6 +240,8 @@ export default function CollectionScreen() {
           </div>
         </div>
       )}
+    
+    <Footer />
     </div>
   )
 }

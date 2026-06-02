@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { Colors } from '../lib/theme'
+import Footer from '../components/Footer'
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('')
@@ -57,6 +58,7 @@ export default function LoginScreen() {
           <Link to="/register" style={styles.link}>Register</Link>
         </p>
       </div>
+    <Footer />
     </div>
   )
 }
