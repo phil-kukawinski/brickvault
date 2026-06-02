@@ -7,8 +7,8 @@ export default function LandingScreen() {
   return (
     <div style={styles.container}>
       <div style={styles.content}>
-        <img src="/logo.png" alt="BrickVault" style={styles.logo} />
-        <h1 style={styles.title}>BrickVault</h1>
+        <img src="/logo.png" alt="BrickKeep" style={styles.logo} />
+        <h1 style={styles.title}>BrickKeep</h1>
         <p style={styles.tagline}>Your LEGO collection, organized.</p>
         <p style={styles.subtitle}>
           Track what you own, build your wishlist, discover market values,
@@ -40,7 +40,7 @@ export default function LandingScreen() {
         </div>
 
         <div style={styles.footer}>
-          <p style={styles.footerText}>© {new Date().getFullYear()} BrickVault. All rights reserved.</p>
+          <p style={styles.footerText}>© {new Date().getFullYear()} BrickKeep. All rights reserved.</p>
         </div>
       </div>
     </div>

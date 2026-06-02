@@ -27,7 +27,7 @@ export default function LoginScreen() {
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-        <img src="/logo.png" alt="BrickVault" style={styles.logo} />
+        <img src="/logo.png" alt="BrickKeep" style={styles.logo} />
         <p style={styles.subtitle}>Your LEGO collection, organized.</p>
 
         <form onSubmit={handleLogin} style={styles.form}>

@@ -63,7 +63,7 @@ export default function RegisterScreen({ navigation }: Props) {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <View style={styles.logoContainer}>
-        <Text style={styles.title}>BrickVault</Text>
+        <Text style={styles.title}>BrickKeep</Text>
         <Text style={styles.subtitle}>Create your account</Text>
       </View>
 

@@ -20,7 +20,7 @@ export default function Header() {
     <div style={styles.wrapper}>
       <div style={styles.header}>
         <button style={styles.logoBtn} onClick={() => goTo('/')}>
-          <img src="/logo.png" alt="BrickVault" style={styles.logo} />
+          <img src="/logo.png" alt="BrickKeep" style={styles.logo} />
         </button>
         <button style={styles.hamburger} onClick={() => setOpen(!open)}>
           {open ? '✕' : '☰'}

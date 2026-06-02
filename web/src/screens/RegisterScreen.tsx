@@ -100,7 +100,7 @@ export default function RegisterScreen() {
     return (
       <div style={styles.container}>
         <div style={styles.card}>
-          <img src="/logo.png" alt="BrickVault" style={styles.logo} />
+          <img src="/logo.png" alt="BrickKeep" style={styles.logo} />
           <h1 style={styles.title}>Set Up Your Vault</h1>
           <p style={styles.subtitle}>Tell us about your collection style</p>
 
@@ -205,8 +205,8 @@ export default function RegisterScreen() {
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-        <img src="/logo.png" alt="BrickVault" style={styles.logo} />
-        <h1 style={styles.title}>BrickVault</h1>
+        <img src="/logo.png" alt="BrickKeep" style={styles.logo} />
+        <h1 style={styles.title}>BrickKeep</h1>
         <p style={styles.subtitle}>Create your account</p>
 
         <form onSubmit={handleStep1} style={styles.form}>

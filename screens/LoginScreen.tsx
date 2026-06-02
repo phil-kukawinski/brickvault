@@ -47,7 +47,7 @@ export default function LoginScreen({ navigation }: Props) {
           style={styles.logo}
           resizeMode="contain"
         />
-        <Text style={styles.title}>BrickVault</Text>
+        <Text style={styles.title}>BrickKeep</Text>
         <Text style={styles.subtitle}>Your LEGO collection, organized.</Text>
       </View>
 

@@ -1,6 +1,6 @@
 {
-  "name": "BrickVault",
-  "short_name": "BrickVault",
+  "name": "BrickKeep",
+  "short_name": "BrickKeep",
   "description": "Your LEGO collection, organized.",
   "start_url": "/",
   "display": "standalone",

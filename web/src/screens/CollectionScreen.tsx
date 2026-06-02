@@ -227,10 +227,10 @@ export default function CollectionScreen() {
                   📦 Amazon
                 </button>
                 <button style={styles.actionBtn} onClick={() => {
-                    const text = `🧱 I'm looking to add to my BrickVault collection!\n\nSet: ${selected.name}\nSet #${selected.set_number} · ${selected.piece_count} pieces\n\nIf you have this or know where to find it, let me know!`
+                    const text = `🧱 I'm looking to add to my BrickKeep collection!\n\nSet: ${selected.name}\nSet #${selected.set_number} · ${selected.piece_count} pieces\n\nIf you have this or know where to find it, let me know!`
                     if (navigator.share) {
                         navigator.share({
-                        title: 'BrickVault Wishlist',
+                        title: 'BrickKeep Wishlist',
                         text
                         })
                     } else {

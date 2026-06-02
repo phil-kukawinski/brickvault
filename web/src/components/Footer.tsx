@@ -23,7 +23,7 @@ export default function Footer() {
             </span>
           ))}
         </div>
-      <p style={styles.copy}>© {new Date().getFullYear()} BrickVault. All rights reserved.</p>
+      <p style={styles.copy}>© {new Date().getFullYear()} BrickKeep. All rights reserved.</p>
     </div>
   )
 }
