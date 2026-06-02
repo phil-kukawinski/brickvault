@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { Colors } from '../lib/theme'
+import Header from '../components/Header'
 import Footer from '../components/Footer'
 
 export default function HomeScreen() {
   const [username, setUsername] = useState('')
-  const [fullName, setFullName] = useState('')
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -31,63 +31,53 @@ export default function HomeScreen() {
 
   return (
     <div style={styles.container}>
-      <div style={styles.header}>
-        <img src="/logo.png" alt="BrickVault" style={styles.logo} />
-        <p style={styles.welcome}>Welcome back, {fullName || '...'}!</p>
-      </div>
+      <Header />
+      <div style={styles.inner}>
+        <p style={styles.welcome}>Welcome back, {username || '...'}!</p>
 
-      <div style={styles.grid}>
-        <button style={styles.card} onClick={() => navigate('/collection')}>
-          <span style={styles.cardIcon}>🧱</span>
-          <span style={styles.cardTitle}>My Collection</span>
-          <span style={styles.cardSubtitle}>View Your Sets</span>
+        <div style={styles.grid}>
+          <button style={styles.card} onClick={() => navigate('/collection')}>
+            <span style={styles.cardIcon}>🧱</span>
+            <span style={styles.cardTitle}>My Collection</span>
+            <span style={styles.cardSubtitle}>View Your Sets</span>
+          </button>
+
+          <button style={styles.card} onClick={() => navigate('/scan')}>
+            <span style={styles.cardIcon}>🔍</span>
+            <span style={styles.cardTitle}>Add a Set</span>
+            <span style={styles.cardSubtitle}>Search or Scan</span>
+          </button>
+        </div>
+
+        <div style={styles.statCard}>
+          <p style={styles.statLabel}>YOUR VAULT</p>
+          <p style={styles.statValue}>Track, collect, and share.</p>
+        </div>
+
+        <button style={styles.signOutButton} onClick={handleSignOut}>
+          Sign Out
         </button>
-
-        <button style={styles.card} onClick={() => navigate('/scan')}>
-          <span style={styles.cardIcon}>🔍</span>
-          <span style={styles.cardTitle}>Add a Set</span>
-          <span style={styles.cardSubtitle}>Search or Scan</span>
-        </button>
       </div>
-
-      <div style={styles.statCard}>
-        <p style={styles.statLabel}>YOUR VAULT</p>
-        <p style={styles.statValue}>Track, collect, and share.</p>
-      </div>
-
-      <button style={styles.signOutButton} onClick={handleSignOut}>
-        Sign Out
-      </button>
-      
-    <Footer />
+      <Footer />
     </div>
   )
 }
 
-
 const styles: Record<string, React.CSSProperties> = {
   container: {
-    backgroundColor: 'transparent',
+    display: 'flex',
+    flexDirection: 'column'
+  },
+  inner: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    padding: '60px 24px 48px'
-  },
-  header: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    marginBottom: '40px'
-  },
-  logo: {
-    width: '220px',
-    height: '110px',
-    objectFit: 'contain',
-    marginBottom: '8px'
+    padding: '24px 24px 48px'
   },
   welcome: {
     fontSize: '16px',
-    color: 'rgba(255,255,255,0.8)'
+    color: 'rgba(255,255,255,0.8)',
+    marginBottom: '24px'
   },
   grid: {
     display: 'grid',
@@ -144,7 +134,6 @@ const styles: Record<string, React.CSSProperties> = {
     color: Colors.text.onYellow
   },
   signOutButton: {
-    marginTop: 'auto',
     width: '100%',
     maxWidth: '500px',
     padding: '16px',
