@@ -6,6 +6,7 @@ import Footer from '../components/Footer'
 
 export default function HomeScreen() {
   const [username, setUsername] = useState('')
+  const [fullName, setFullName] = useState('')
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -32,20 +33,20 @@ export default function HomeScreen() {
     <div style={styles.container}>
       <div style={styles.header}>
         <img src="/logo.png" alt="BrickVault" style={styles.logo} />
-        <p style={styles.welcome}>Welcome back, {username || '...'}!</p>
+        <p style={styles.welcome}>Welcome back, {fullName || '...'}!</p>
       </div>
 
       <div style={styles.grid}>
         <button style={styles.card} onClick={() => navigate('/collection')}>
           <span style={styles.cardIcon}>🧱</span>
           <span style={styles.cardTitle}>My Collection</span>
-          <span style={styles.cardSubtitle}>View your sets</span>
+          <span style={styles.cardSubtitle}>View Your Sets</span>
         </button>
 
         <button style={styles.card} onClick={() => navigate('/scan')}>
           <span style={styles.cardIcon}>🔍</span>
           <span style={styles.cardTitle}>Add a Set</span>
-          <span style={styles.cardSubtitle}>Search or scan</span>
+          <span style={styles.cardSubtitle}>Search or Scan</span>
         </button>
       </div>
 
