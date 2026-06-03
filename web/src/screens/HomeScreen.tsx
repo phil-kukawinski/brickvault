@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { Colors } from '../lib/theme'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import InstallPrompt from '../components/InstallPrompt'
 
 export default function HomeScreen() {
   const [username, setUsername] = useState('')
@@ -53,6 +54,8 @@ export default function HomeScreen() {
           <p style={styles.statLabel}>YOUR VAULT</p>
           <p style={styles.statValue}>Track, collect, and share.</p>
         </div>
+
+        <InstallPrompt />
 
         <button style={styles.signOutButton} onClick={handleSignOut}>
           Sign Out

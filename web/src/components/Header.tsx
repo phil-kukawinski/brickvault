@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { Colors } from '../lib/theme'
+import InstallPrompt from './InstallPrompt'
 
 export default function Header() {
   const [open, setOpen] = useState(false)
@@ -32,21 +34,38 @@ export default function Header() {
           <div style={styles.overlay} onClick={() => setOpen(false)} />
           <div style={styles.dropdown}>
             {[
-              { label: 'Home', path: '/' },
-              { label: 'My Collection', path: '/collection' },
-              { label: 'Add a Set', path: '/scan' },
-              { label: 'Profile', path: '/profile' },
-              { label: 'Search History', path: '/history' },
+              { label: 'Home', path: '/', external: false },
+              { label: 'My Collection', path: '/collection', external: false },
+              { label: 'Add a Set', path: '/scan', external: false },
+              { label: 'Profile', path: '/profile', external: false },
+              { label: 'Search History', path: '/history', external: false },
               { label: 'Share Feedback', path: 'https://forms.gle/qfjWQNPVm7oCkqUB8', external: true },
             ].map(item => (
-              <button
-                key={item.path}
-                style={styles.menuItem}
-                onClick={() => goTo(item.path)}
-              >
-                {item.label}
-              </button>
+              item.external ? (
+                <a
+                  key={item.path}
+                  href={item.path}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ ...styles.menuItem, color: Colors.yellow, textDecoration: 'none' }}
+                >
+                  {item.label}
+                </a>
+              ) : (
+                <button
+                  key={item.path}
+                  style={styles.menuItem}
+                  onClick={() => goTo(item.path)}
+                >
+                  {item.label}
+                </button>
+              )
             ))}
+            
+            <div style={{ padding: '8px 24px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+              <InstallPrompt />
+            </div>
+
             <button
               style={{ ...styles.menuItem, ...styles.signOut }}
               onClick={handleSignOut}
