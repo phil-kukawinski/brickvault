@@ -102,13 +102,15 @@ export default function InstallPrompt() {
 
 const styles: Record<string, React.CSSProperties> = {
   trigger: {
-    backgroundColor: 'rgba(0,8,20,0.6)',
-    border: '1px solid rgba(255,255,255,0.2)',
-    borderRadius: '8px',
-    color: Colors.white,
-    fontSize: '14px',
-    padding: '10px 20px',
-    cursor: 'pointer'
+    background: 'none',
+    border: 'none',
+    borderBottom: '1px solid rgba(255,255,255,0.08)',
+    color: '#FFFFFF',
+    fontSize: '16px',
+    padding: '18px 24px',
+    textAlign: 'left' as const,
+    cursor: 'pointer',
+    width: '100%'
   },
   overlay: {
     position: 'fixed',

@@ -55,7 +55,9 @@ export default function HomeScreen() {
           <p style={styles.statValue}>Track, collect, and share.</p>
         </div>
 
-        <InstallPrompt />
+        <div style={{ marginBottom: '12px' }}>
+          <InstallPrompt />
+        </div>
 
         <button style={styles.signOutButton} onClick={handleSignOut}>
           Sign Out

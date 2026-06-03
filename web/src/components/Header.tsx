@@ -61,10 +61,8 @@ export default function Header() {
                 </button>
               )
             ))}
-            
-            <div style={{ padding: '8px 24px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-              <InstallPrompt />
-            </div>
+
+            <InstallPrompt />
 
             <button
               style={{ ...styles.menuItem, ...styles.signOut }}
