@@ -60,6 +60,7 @@ export default function ProfileScreen() {
   const [themeData, setThemeData] = useState<ThemeData[]>([])
   const [gallery, setGallery] = useState<GalleryItem[]>([])
   const navigate = useNavigate()
+  const [publicProfile, setPublicProfile] = useState(true)
 
   useEffect(() => {
     fetchProfile()
@@ -76,14 +77,15 @@ export default function ProfileScreen() {
       .eq('id', user.id)
       .single()
     if (data) {
-      setProfile(data)
-      setFullName(data.full_name || '')
-      setLocation(data.location || '')
-      setBio(data.bio || '')
-      setCollectingGoal(data.collecting_goals || 'mixed')
-      setPreferredCondition(data.preferred_condition || 'any')
-      setFavoriteThemes(data.favorite_themes || [])
-    }
+  setProfile(data)
+  setFullName(data.full_name || '')
+  setLocation(data.location || '')
+  setBio(data.bio || '')
+  setCollectingGoal(data.collecting_goals || 'mixed')
+  setPreferredCondition(data.preferred_condition || 'any')
+  setFavoriteThemes(data.favorite_themes || [])
+  setPublicProfile(data.public_profile ?? true)
+}
     setLoading(false)
   }
 
@@ -172,16 +174,17 @@ export default function ProfileScreen() {
     if (!profile) return
     setSaving(true)
     await supabase
-      .from('profiles')
-      .update({
-        full_name: fullName.trim() || null,
-        location: location.trim() || null,
-        bio: bio.trim() || null,
-        collecting_goals: collectingGoal,
-        preferred_condition: preferredCondition,
-        favorite_themes: favoriteThemes.length > 0 ? favoriteThemes : null
-      })
-      .eq('id', profile.id)
+        .from('profiles')
+        .update({
+          full_name: fullName.trim() || null,
+          location: location.trim() || null,
+          bio: bio.trim() || null,
+          collecting_goals: collectingGoal,
+          preferred_condition: preferredCondition,
+          favorite_themes: favoriteThemes.length > 0 ? favoriteThemes : null,
+          public_profile: publicProfile
+        })
+        .eq('id', profile.id)
     setSaving(false)
     setSaved(true)
     setTimeout(() => setSaved(false), 3000)
@@ -348,6 +351,38 @@ export default function ProfileScreen() {
         </div>
 
         <form onSubmit={handleSave} style={styles.form}>
+          <p style={styles.sectionLabel}>Profile Visibility</p>
+          <div style={styles.optionRow}>
+            <button
+              type="button"
+              style={{ ...styles.optionBtn, ...(publicProfile ? styles.optionBtnActive : {}) }}
+              onClick={() => setPublicProfile(true)}
+            >
+              Public
+            </button>
+            <button
+              type="button"
+              style={{ ...styles.optionBtn, ...(!publicProfile ? styles.optionBtnActive : {}) }}
+              onClick={() => setPublicProfile(false)}
+            >
+              Private
+            </button>
+          </div>
+          {publicProfile && profile?.username && (
+            <a
+              href={`/u/${profile.username}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={styles.profileLinkBtn}
+            >
+              View my public profile →
+            </a>
+          )}
+          </form>
+
+          <button style={styles.saveBtn} type="submit" disabled={saving}></button>
+
+        <form onSubmit={handleSave} style={styles.form}>
           <p style={styles.sectionLabel}>Username</p>
           <div style={styles.staticField}>{profile?.username}</div>
 
@@ -437,6 +472,8 @@ export default function ProfileScreen() {
               </button>
             ))}
           </div>
+
+          
 
           <button style={styles.saveBtn} type="submit" disabled={saving}>
             {saving ? 'Saving...' : saved ? '✓ Saved!' : 'Save Changes'}
@@ -728,5 +765,12 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '11px',
     padding: '4px 10px',
     cursor: 'pointer'
+  },
+  profileLinkBtn: {
+    display: 'block',
+    color: Colors.yellow,
+    fontSize: '14px',
+    textDecoration: 'none',
+    marginTop: '8px'
   },
 }
