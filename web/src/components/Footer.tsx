@@ -8,6 +8,14 @@ export default function Footer() {
 
   return (
     <div style={styles.footer}>
+        <a
+        href="https://forms.gle/qfjWQNPVm7oCkqUB8"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={styles.feedbackBtn}
+        >
+          Share Feedback
+        </a>
       <div style={styles.links}>
           {[
             { label: 'Home', path: '/' },
@@ -26,14 +34,6 @@ export default function Footer() {
             </span>
           ))}
         </div>
-        <a
-        href="https://forms.gle/qfjWQNPVm7oCkqUB8"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={styles.feedbackBtn}
-        >
-          Share Feedback
-        </a>
       <p style={styles.copy}>© {new Date().getFullYear()} BrickKeep. All rights reserved.</p>
     </div>
   )
