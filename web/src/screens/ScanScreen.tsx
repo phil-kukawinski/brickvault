@@ -192,6 +192,15 @@ export default function ScanScreen() {
         📷 Scan Barcode
       </button>
 
+<a
+      href="https://brickit.app"
+  target="_blank"
+  rel="noopener noreferrer"
+  style={styles.brickitBtn}
+>
+  🧱 Build from loose bricks — try Brickit
+</a>
+
       {scanError && (
         <p style={styles.scanError}>{scanError}</p>
       )}
@@ -540,5 +549,19 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '14px',
     textAlign: 'center' as const,
     padding: '0 24px'
-  }
+  },
+  brickitBtn: {
+    display: 'block',
+    width: 'calc(100% - 48px)',
+    margin: '0 24px 8px',
+    padding: '14px',
+    borderRadius: '8px',
+    border: '1px solid rgba(255,255,255,0.1)',
+    backgroundColor: 'transparent',
+    color: 'rgba(255,255,255,0.5)',
+    fontSize: '14px',
+    cursor: 'pointer',
+    textAlign: 'center' as const,
+    textDecoration: 'none'
+  },
 }
