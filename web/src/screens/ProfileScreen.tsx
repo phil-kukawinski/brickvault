@@ -149,7 +149,9 @@ export default function ProfileScreen() {
   return (
     <div style={styles.container}>
       <Header />
+      
       <div style={styles.content}>
+        <button style={styles.backBtn} onClick={() => navigate(-1)}>← Back</button>
         <h1 style={styles.title}>My Profile</h1>
 
         <div style={styles.statsRow}>
@@ -529,5 +531,14 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 'bold',
     color: Colors.yellow,
     marginBottom: '8px'
+  },
+  backBtn: {
+    background: 'none',
+    border: 'none',
+    color: Colors.yellow,
+    fontSize: '16px',
+    cursor: 'pointer',
+    marginBottom: '8px',
+    padding: 0
   },
 }
