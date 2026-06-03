@@ -16,6 +16,8 @@ export default function Footer() {
         >
           Share Feedback
         </a>
+        <p style={styles.feedbackText}>BrickKeep is looking for your feedback.</p>
+
       <div style={styles.links}>
           {[
             { label: 'Home', path: '/' },
@@ -81,5 +83,10 @@ const styles: Record<string, React.CSSProperties> = {
     cursor: 'pointer',
     textDecoration: 'none',
     marginBottom: '8px'
+  },
+  feedbackText: {
+    color: 'rgba(255,255,255,0.4)',
+    fontSize: '13px',
+    marginTop: '-8px'
   },
 }
