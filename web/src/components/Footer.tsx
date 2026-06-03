@@ -87,6 +87,7 @@ const styles: Record<string, React.CSSProperties> = {
   feedbackText: {
     color: 'rgba(255,255,255,0.4)',
     fontSize: '13px',
-    marginTop: '-8px'
+    marginTop: '-8px',
+    marginBottom: '8px'
   },
 }
