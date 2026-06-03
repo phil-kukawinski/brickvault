@@ -192,14 +192,14 @@ export default function ScanScreen() {
         📷 Scan Barcode
       </button>
 
-<a
-      href="https://brickit.app"
-  target="_blank"
-  rel="noopener noreferrer"
-  style={styles.brickitBtn}
->
-  🧱 Build from loose bricks — try Brickit
-</a>
+      <a
+        href="https://brickit.app"
+        target="_blank"
+        rel="noopener noreferrer"
+        style={styles.brickitBtn}
+      >
+        🧱 Have loose bricks? Build something with Brickit
+      </a>
 
       {scanError && (
         <p style={styles.scanError}>{scanError}</p>
