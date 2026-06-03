@@ -286,6 +286,34 @@ export default function ProfileScreen() {
                     {item.caption && (
                       <p style={styles.galleryCaption}>{item.caption}</p>
                     )}
+                    <div style={styles.galleryActions}>
+                      <button
+                        style={styles.galleryEditBtn}
+                        onClick={() => {
+                          const newCaption = window.prompt('Edit caption:', item.caption || '')
+                          if (newCaption !== null) {
+                            supabase
+                              .from('set_media')
+                              .update({ caption: newCaption.trim() || null })
+                              .eq('id', item.id)
+                              .then(() => fetchGallery())
+                          }
+                        }}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        style={styles.galleryDeleteBtn}
+                        onClick={async () => {
+                          if (!window.confirm('Delete this photo?')) return
+                          await supabase.storage.from('set-media').remove([item.storage_path])
+                          await supabase.from('set_media').delete().eq('id', item.id)
+                          fetchGallery()
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -677,5 +705,28 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '12px',
     color: 'rgba(255,255,255,0.5)',
     marginTop: '4px'
-  }
+  },
+  galleryActions: {
+    display: 'flex',
+    gap: '8px',
+    marginTop: '8px'
+  },
+  galleryEditBtn: {
+    background: 'none',
+    border: '1px solid rgba(255,255,255,0.2)',
+    borderRadius: '6px',
+    color: Colors.white,
+    fontSize: '11px',
+    padding: '4px 10px',
+    cursor: 'pointer'
+  },
+  galleryDeleteBtn: {
+    background: 'none',
+    border: '1px solid rgba(255,0,0,0.3)',
+    borderRadius: '6px',
+    color: '#ff6b6b',
+    fontSize: '11px',
+    padding: '4px 10px',
+    cursor: 'pointer'
+  },
 }
