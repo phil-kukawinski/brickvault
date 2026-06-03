@@ -39,30 +39,26 @@ export default function Header() {
               { label: 'Add a Set', path: '/scan', external: false },
               { label: 'Profile', path: '/profile', external: false },
               { label: 'Search History', path: '/history', external: false },
-              { label: 'Share Feedback', path: 'https://forms.gle/qfjWQNPVm7oCkqUB8', external: true },
             ].map(item => (
-              item.external ? (
-                <a
-                  key={item.path}
-                  href={item.path}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ ...styles.menuItem, color: Colors.yellow, textDecoration: 'none' }}
-                >
-                  {item.label}
-                </a>
-              ) : (
-                <button
-                  key={item.path}
-                  style={styles.menuItem}
-                  onClick={() => goTo(item.path)}
-                >
-                  {item.label}
-                </button>
-              )
+              <button
+                key={item.path}
+                style={styles.menuItem}
+                onClick={() => goTo(item.path)}
+              >
+                {item.label}
+              </button>
             ))}
 
             <InstallPrompt />
+
+            <a
+              href="https://forms.gle/qfjWQNPVm7oCkqUB8"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ ...styles.menuItem, color: Colors.yellow, textDecoration: 'none' }}
+            >
+              Share Feedback
+            </a>
 
             <button
               style={{ ...styles.menuItem, ...styles.signOut }}
