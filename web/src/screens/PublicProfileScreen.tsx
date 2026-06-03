@@ -316,7 +316,6 @@ export default function PublicProfileScreen() {
 const styles: Record<string, React.CSSProperties> = {
   container: {
     minHeight: '100vh',
-    backgroundColor: '#001B3D',
     color: '#FFFFFF'
   },
   header: {
