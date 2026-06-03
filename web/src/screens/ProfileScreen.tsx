@@ -378,11 +378,7 @@ export default function ProfileScreen() {
               View my public profile →
             </a>
           )}
-          </form>
 
-          <button style={styles.saveBtn} type="submit" disabled={saving}></button>
-
-        <form onSubmit={handleSave} style={styles.form}>
           <p style={styles.sectionLabel}>Username</p>
           <div style={styles.staticField}>{profile?.username}</div>
 
