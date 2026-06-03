@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { Colors } from '../lib/theme'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import SetMediaUpload from '../components/SetMediaUpload'
 
 type CollectionItem = {
   id: string
@@ -30,10 +31,19 @@ export default function CollectionScreen() {
   const [editCondition, setEditCondition] = useState<'sealed' | 'built' | 'partial' | 'incomplete'>('sealed')
   const [saving, setSaving] = useState(false)
   const navigate = useNavigate()
+  const [userId, setUserId] = useState<string>('')
   const [sort, setSort] = useState<'newest' | 'oldest' | 'name' | 'pieces' | 'theme'>('newest')
 
   useEffect(() => {
     fetchCollection()
+  }, [])
+
+  useEffect(() => {
+    async function getUser() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) setUserId(user.id)
+    }
+    getUser()
   }, [])
 
   async function fetchCollection() {
@@ -271,6 +281,10 @@ export default function CollectionScreen() {
             <button style={styles.removeBtn} onClick={handleRemove}>
               Remove this copy
             </button>
+            <SetMediaUpload
+              collectionId={selected.id}
+              userId={userId}
+            />
           </div>
         </div>
       )}
