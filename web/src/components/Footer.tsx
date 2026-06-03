@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { Colors } from '../lib/theme'
 
 export default function Footer() {
   const navigate = useNavigate()
@@ -25,6 +26,14 @@ export default function Footer() {
             </span>
           ))}
         </div>
+        <a
+        href="https://forms.gle/qfjWQNPVm7oCkqUB8"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={styles.feedbackBtn}
+        >
+          Share Feedback
+        </a>
       <p style={styles.copy}>© {new Date().getFullYear()} BrickKeep. All rights reserved.</p>
     </div>
   )
@@ -60,5 +69,17 @@ const styles: Record<string, React.CSSProperties> = {
   separator: {
     color: 'rgba(255,255,255,0.2)',
     fontSize: '14px'
+  },
+  feedbackBtn: {
+    backgroundColor: Colors.yellow,
+    color: '#001B3D',
+    border: 'none',
+    borderRadius: '8px',
+    padding: '12px 24px',
+    fontSize: '14px',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    textDecoration: 'none',
+    marginBottom: '8px'
   },
 }

@@ -37,6 +37,7 @@ export default function Header() {
               { label: 'Add a Set', path: '/scan' },
               { label: 'Profile', path: '/profile' },
               { label: 'Search History', path: '/history' },
+              { label: 'Share Feedback', path: 'https://forms.gle/qfjWQNPVm7oCkqUB8', external: true },
             ].map(item => (
               <button
                 key={item.path}
