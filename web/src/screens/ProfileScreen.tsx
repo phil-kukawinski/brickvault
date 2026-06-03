@@ -34,6 +34,17 @@ type ThemeData = {
   value: number
 }
 
+type GalleryItem = {
+  id: string
+  storage_path: string
+  media_type: 'image' | 'video'
+  label: string
+  caption: string | null
+  set_name: string | null
+  set_number: string | null
+  created_at: string
+}
+
 export default function ProfileScreen() {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [fullName, setFullName] = useState('')
@@ -47,11 +58,13 @@ export default function ProfileScreen() {
   const [saved, setSaved] = useState(false)
   const [stats, setStats] = useState({ owned: 0, wishlist: 0, total: 0, pieces: 0, retailTotal: 0 })
   const [themeData, setThemeData] = useState<ThemeData[]>([])
+  const [gallery, setGallery] = useState<GalleryItem[]>([])
   const navigate = useNavigate()
 
   useEffect(() => {
     fetchProfile()
     fetchStats()
+    fetchGallery()
   }, [])
 
   async function fetchProfile() {
@@ -109,6 +122,45 @@ export default function ProfileScreen() {
     }
   }
 
+  async function fetchGallery() {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    const { data } = await supabase
+      .from('set_media')
+      .select(`
+        id,
+        storage_path,
+        media_type,
+        label,
+        caption,
+        created_at,
+        collection:collection_id (
+          name,
+          set_number
+        )
+      `)
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+
+    if (data) {
+      setGallery(data.map((item: any) => ({
+        id: item.id,
+        storage_path: item.storage_path,
+        media_type: item.media_type,
+        label: item.label,
+        caption: item.caption,
+        set_name: item.collection?.name || null,
+        set_number: item.collection?.set_number || null,
+        created_at: item.created_at
+      })))
+    }
+  }
+
+  function getPublicUrl(path: string) {
+    const { data } = supabase.storage.from('set-media').getPublicUrl(path)
+    return data.publicUrl
+  }
+
   function toggleTheme(theme: string) {
     setFavoriteThemes(prev =>
       prev.includes(theme) ? prev.filter(t => t !== theme) : [...prev, theme]
@@ -149,7 +201,6 @@ export default function ProfileScreen() {
   return (
     <div style={styles.container}>
       <Header />
-      
       <div style={styles.content}>
         <button style={styles.backBtn} onClick={() => navigate(-1)}>← Back</button>
         <h1 style={styles.title}>My Profile</h1>
@@ -191,19 +242,54 @@ export default function ProfileScreen() {
                   ))}
                 </Pie>
                 <Tooltip
-  contentStyle={{
-    backgroundColor: '#001020',
-    border: '1px solid rgba(255,255,255,0.1)',
-    borderRadius: '8px',
-    color: Colors.white
-  }}
-/>
+                  contentStyle={{
+                    backgroundColor: '#001020',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '8px',
+                    color: Colors.white
+                  }}
+                />
                 <Legend
                   formatter={(value) => value}
                   wrapperStyle={{ color: 'rgba(255,255,255,0.7)', fontSize: '13px' }}
                 />
               </PieChart>
             </ResponsiveContainer>
+          </div>
+        )}
+
+        {gallery.length > 0 && (
+          <div style={styles.galleryCard}>
+            <p style={styles.chartTitle}>My Gallery</p>
+            <div style={styles.galleryGrid}>
+              {gallery.map(item => (
+                <div key={item.id} style={styles.galleryItem}>
+                  {item.media_type === 'image' ? (
+                    <img
+                      src={getPublicUrl(item.storage_path)}
+                      alt={item.caption || item.label}
+                      style={styles.galleryImg}
+                      onClick={() => window.open(getPublicUrl(item.storage_path), '_blank')}
+                    />
+                  ) : (
+                    <video
+                      src={getPublicUrl(item.storage_path)}
+                      style={styles.galleryImg}
+                      controls
+                    />
+                  )}
+                  <div style={styles.galleryInfo}>
+                    {item.set_name && (
+                      <p style={styles.gallerySetName}>{item.set_name}</p>
+                    )}
+                    <span style={styles.galleryLabel}>{item.label.replace('_', ' ')}</span>
+                    {item.caption && (
+                      <p style={styles.galleryCaption}>{item.caption}</p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
@@ -430,6 +516,12 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 'bold',
     textDecoration: 'none'
   },
+  valueAmount: {
+    fontSize: '36px',
+    fontWeight: 'bold',
+    color: Colors.yellow,
+    marginBottom: '8px'
+  },
   form: {
     display: 'flex',
     flexDirection: 'column',
@@ -526,12 +618,6 @@ const styles: Record<string, React.CSSProperties> = {
     cursor: 'pointer',
     marginTop: '12px'
   },
-  valueAmount: {
-    fontSize: '36px',
-    fontWeight: 'bold',
-    color: Colors.yellow,
-    marginBottom: '8px'
-  },
   backBtn: {
     background: 'none',
     border: 'none',
@@ -541,4 +627,55 @@ const styles: Record<string, React.CSSProperties> = {
     marginBottom: '8px',
     padding: 0
   },
+  galleryCard: {
+    backgroundColor: 'rgba(0,8,20,0.6)',
+    border: '1px solid rgba(255,255,255,0.12)',
+    borderRadius: '12px',
+    padding: '20px',
+    marginBottom: '24px'
+  },
+  galleryGrid: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: '12px'
+  },
+  galleryItem: {
+    backgroundColor: 'rgba(0,8,20,0.4)',
+    border: '1px solid rgba(255,255,255,0.1)',
+    borderRadius: '8px',
+    overflow: 'hidden'
+  },
+  galleryImg: {
+    width: '100%',
+    height: '140px',
+    objectFit: 'cover' as const,
+    cursor: 'pointer',
+    display: 'block'
+  },
+  galleryInfo: {
+    padding: '8px'
+  },
+  gallerySetName: {
+    fontSize: '12px',
+    fontWeight: 'bold',
+    color: Colors.white,
+    marginBottom: '4px',
+    whiteSpace: 'nowrap' as const,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis'
+  },
+  galleryLabel: {
+    backgroundColor: 'rgba(251,224,45,0.15)',
+    color: Colors.yellow,
+    fontSize: '10px',
+    fontWeight: 'bold',
+    padding: '2px 6px',
+    borderRadius: '10px',
+    textTransform: 'capitalize' as const
+  },
+  galleryCaption: {
+    fontSize: '12px',
+    color: 'rgba(255,255,255,0.5)',
+    marginTop: '4px'
+  }
 }
