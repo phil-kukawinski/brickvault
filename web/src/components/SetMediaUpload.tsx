@@ -36,18 +36,52 @@ export default function SetMediaUpload({ collectionId, userId }: Props) {
     setMedia(data || [])
   }
 
+  async function compressImage(file: File): Promise<File> {
+    return new Promise((resolve) => {
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')!
+      const img = new Image()
+      img.onload = () => {
+        const maxSize = 1200
+        let width = img.width
+        let height = img.height
+        if (width > height && width > maxSize) {
+          height = (height * maxSize) / width
+          width = maxSize
+        } else if (height > maxSize) {
+          width = (width * maxSize) / height
+          height = maxSize
+        }
+        canvas.width = width
+        canvas.height = height
+        ctx.drawImage(img, 0, 0, width, height)
+        canvas.toBlob(blob => {
+          if (blob) {
+            resolve(new File([blob], file.name, { type: 'image/jpeg' }))
+          } else {
+            resolve(file)
+          }
+        }, 'image/jpeg', 0.8)
+      }
+      img.src = URL.createObjectURL(file)
+    })
+  }
+
   async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
 
     setUploading(true)
-    const ext = file.name.split('.').pop()
-    const path = `${userId}/${collectionId}/${Date.now()}.${ext}`
     const mediaType = file.type.startsWith('video') ? 'video' : 'image'
+    
+    const processedFile = mediaType === 'image' ? await compressImage(file) : file
+    
+    const ext = mediaType === 'image' ? 'jpg' : file.name.split('.').pop()
+    const path = `${userId}/${collectionId}/${Date.now()}.${ext}`
 
     const { error: uploadError } = await supabase.storage
       .from('set-media')
-      .upload(path, file)
+      .upload(path, processedFile)
 
     if (uploadError) {
       alert('Upload failed: ' + uploadError.message)
