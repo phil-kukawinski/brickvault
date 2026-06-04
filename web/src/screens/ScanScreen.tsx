@@ -163,16 +163,18 @@ export default function ScanScreen() {
         <button style={styles.searchBtn} onClick={handleSearch}>Search</button>
       </div>
 
-      <label style={styles.scanBtn}>
-        📷 Scan Barcode
-        <input
-          type="file"
-          accept="image/*"
-          capture="environment"
-          style={{ display: 'none' }}
-          onChange={handleBarcodeScan}
-        />
-      </label>
+      {window.innerWidth <= 768 && (
+        <label style={styles.scanBtn}>
+          📷 Scan Barcode
+          <input
+            type="file"
+            accept="image/*"
+            capture="environment"
+            style={{ display: 'none' }}
+            onChange={handleBarcodeScan}
+          />
+        </label>
+      )}
 
       <a
         href="https://brickit.app"
