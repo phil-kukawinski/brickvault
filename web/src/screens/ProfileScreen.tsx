@@ -236,6 +236,32 @@ export default function ProfileScreen() {
           + Add a Set
         </button>
 
+        <div style={styles.valueCard}>
+          <p style={styles.valueTitle}>💰 Collection Value</p>
+          {stats.retailTotal > 0 ? (
+            <>
+              <p style={styles.valueAmount}>
+                ${stats.retailTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </p>
+              <p style={styles.valueSubtitle}>
+                Combined retail value of your owned sets. Secondary market values may be higher — check BrickEconomy for current prices.
+              </p>
+            </>
+          ) : (
+            <p style={styles.valueSubtitle}>
+              Add sets to your collection to see their retail value here.
+            </p>
+          )}
+          <a
+            href="https://www.brickeconomy.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={styles.valueBtn}
+          >
+            Check BrickEconomy
+          </a>
+        </div>
+
         {themeData.length > 0 && (
           <div style={styles.chartCard}>
             <p style={styles.chartTitle}>Collection by Theme</p>
@@ -336,32 +362,6 @@ export default function ProfileScreen() {
             </div>
           </div>
         )}
-
-        <div style={styles.valueCard}>
-          <p style={styles.valueTitle}>💰 Collection Value</p>
-          {stats.retailTotal > 0 ? (
-            <>
-              <p style={styles.valueAmount}>
-                ${stats.retailTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </p>
-              <p style={styles.valueSubtitle}>
-                Combined retail value of your owned sets. Secondary market values may be higher — check BrickEconomy for current prices.
-              </p>
-            </>
-          ) : (
-            <p style={styles.valueSubtitle}>
-              Add sets to your collection to see their retail value here.
-            </p>
-          )}
-          <a
-            href="https://www.brickeconomy.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={styles.valueBtn}
-          >
-            Check BrickEconomy
-          </a>
-        </div>
 
         <form onSubmit={handleSave} style={styles.form}>
           <p style={styles.sectionLabel}>Profile Visibility</p>
