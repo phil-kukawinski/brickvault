@@ -25,7 +25,7 @@ type CollectionItem = {
 export default function CollectionScreen() {
   const [items, setItems] = useState<CollectionItem[]>([])
   const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState<'all' | 'owned' | 'wishlist'>('all')
+  const [filter, setFilter] = useState<'all' | 'owned' | 'wishlist'>('owned')
   const [selected, setSelected] = useState<CollectionItem | null>(null)
   const [editStatus, setEditStatus] = useState<'owned' | 'wishlist'>('owned')
   const [editCondition, setEditCondition] = useState<'sealed' | 'built' | 'partial' | 'incomplete'>('sealed')
@@ -102,8 +102,14 @@ export default function CollectionScreen() {
     setEditCondition(item.condition ?? 'sealed')
   }
 
-  const filtered = (filter === 'all' ? items : items.filter(i => i.status === filter))
+  const filtered = (filter === 'all' ? [
+    ...items.filter(i => i.status === 'owned'),
+    ...items.filter(i => i.status === 'wishlist')
+  ] : items.filter(i => i.status === filter))
     .sort((a, b) => {
+      if (filter === 'all') {
+        if (a.status !== b.status) return a.status === 'owned' ? -1 : 1
+      }
       switch (sort) {
         case 'newest': return new Date(b.added_at).getTime() - new Date(a.added_at).getTime()
         case 'oldest': return new Date(a.added_at).getTime() - new Date(b.added_at).getTime()
@@ -129,7 +135,7 @@ export default function CollectionScreen() {
       </div>
 
       <div style={styles.filterRow}>
-        {(['all', 'owned', 'wishlist'] as const).map(f => (
+        {(['owned', 'wishlist', 'all'] as const).map(f => (
           <button
             key={f}
             style={{ ...styles.filterBtn, ...(filter === f ? styles.filterBtnActive : {}) }}
