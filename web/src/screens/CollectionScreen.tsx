@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { Colors } from '../lib/theme'
 import Header from '../components/Header'
@@ -45,6 +45,16 @@ export default function CollectionScreen() {
     }
     getUser()
   }, [])
+
+  const location = useLocation()
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    const filterParam = params.get('filter')
+    if (filterParam === 'owned' || filterParam === 'wishlist' || filterParam === 'all') {
+      setFilter(filterParam)
+    }
+  }, [location.search])
 
   async function fetchCollection() {
     setLoading(true)

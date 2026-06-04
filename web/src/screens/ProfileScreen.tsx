@@ -209,11 +209,17 @@ export default function ProfileScreen() {
         <h1 style={styles.title}>My Profile</h1>
 
         <div style={styles.statsRow}>
-          <div style={styles.statCard}>
+          <div
+            style={{ ...styles.statCard, cursor: 'pointer' }}
+            onClick={() => navigate('/collection?filter=owned')}
+          >
             <p style={styles.statNum}>{stats.owned}</p>
             <p style={styles.statLabel}>Owned</p>
           </div>
-          <div style={styles.statCard}>
+          <div
+            style={{ ...styles.statCard, cursor: 'pointer' }}
+            onClick={() => navigate('/collection?filter=wishlist')}
+          >
             <p style={styles.statNum}>{stats.wishlist}</p>
             <p style={styles.statLabel}>Wishlist</p>
           </div>
