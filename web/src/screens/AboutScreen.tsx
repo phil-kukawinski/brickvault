@@ -1,16 +1,16 @@
 import { useNavigate } from 'react-router-dom'
 import { Colors } from '../lib/theme'
+import Header from '../components/Header'
+import Footer from '../components/Footer'
 
 export default function AboutScreen() {
   const navigate = useNavigate()
 
   return (
     <div style={styles.container}>
-      <div style={styles.header}>
-        <img src="/logo.png" alt="BrickKeep" style={styles.logo} onClick={() => navigate('/')} />
-      </div>
-
+      <Header />
       <div style={styles.content}>
+        <button style={styles.backBtn} onClick={() => navigate(-1)}>← Back</button>
         <h1 style={styles.title}>About BrickKeep</h1>
 
         <div style={styles.card}>
@@ -81,44 +81,38 @@ export default function AboutScreen() {
             ))}
           </div>
         </div>
-
-        <div style={styles.footer}>
-          <button style={styles.privacyLink} onClick={() => navigate('/privacy')}>
-            Privacy Policy
-          </button>
-          <p style={styles.copy}>© {new Date().getFullYear()} BrickKeep. All rights reserved.</p>
-        </div>
       </div>
+      <Footer />
     </div>
   )
 }
 
 const styles: Record<string, React.CSSProperties> = {
   container: {
-    minHeight: '100vh',
-    color: '#FFFFFF'
-  },
-  header: {
     display: 'flex',
-    justifyContent: 'center',
-    padding: '16px 24px 0',
-    cursor: 'pointer'
-  },
-  logo: {
-    height: '80px',
-    objectFit: 'contain',
-    cursor: 'pointer'
+    flexDirection: 'column'
   },
   content: {
     maxWidth: '640px',
     margin: '0 auto',
-    padding: '24px'
+    padding: '24px',
+    width: '100%'
+  },
+  backBtn: {
+    background: 'none',
+    border: 'none',
+    color: Colors.yellow,
+    fontSize: '16px',
+    cursor: 'pointer',
+    marginBottom: '16px',
+    padding: 0
   },
   title: {
     fontSize: '32px',
     fontWeight: 'bold',
     color: Colors.yellow,
-    marginBottom: '24px'
+    marginBottom: '24px',
+    textAlign: 'center' as const
   },
   card: {
     backgroundColor: 'rgba(0,8,20,0.6)',
@@ -196,25 +190,5 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 'bold',
     cursor: 'pointer',
     marginTop: '8px'
-  },
-  footer: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: '12px',
-    paddingBottom: '48px',
-    marginTop: '8px'
-  },
-  privacyLink: {
-    background: 'none',
-    border: 'none',
-    color: Colors.yellow,
-    fontSize: '14px',
-    cursor: 'pointer',
-    opacity: 0.8
-  },
-  copy: {
-    fontSize: '12px',
-    color: 'rgba(255,255,255,0.3)'
   }
 }

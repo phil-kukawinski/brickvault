@@ -1,16 +1,16 @@
 import { useNavigate } from 'react-router-dom'
 import { Colors } from '../lib/theme'
+import Header from '../components/Header'
+import Footer from '../components/Footer'
 
 export default function PrivacyScreen() {
   const navigate = useNavigate()
 
   return (
     <div style={styles.container}>
-      <div style={styles.header}>
-        <img src="/logo.png" alt="BrickKeep" style={styles.logo} onClick={() => navigate('/')} />
-      </div>
-
+      <Header />
       <div style={styles.content}>
+        <button style={styles.backBtn} onClick={() => navigate(-1)}>← Back</button>
         <h1 style={styles.title}>Privacy Policy</h1>
         <p style={styles.updated}>Last updated: June 2026</p>
 
@@ -25,16 +25,12 @@ export default function PrivacyScreen() {
           <h2 style={styles.sectionTitle}>Information We Collect</h2>
           <p style={styles.subheading}>Account Information</p>
           <p style={styles.text}>When you create an account, we collect your email address, username, and password (stored securely via Supabase authentication).</p>
-
           <p style={styles.subheading}>Profile Information</p>
           <p style={styles.text}>You may optionally provide your full name, location, bio, collecting preferences, and favorite LEGO themes. This information is stored in your profile and is only visible to others if you set your profile to public.</p>
-
           <p style={styles.subheading}>Collection Data</p>
-          <p style={styles.text}>We store information about the LEGO sets you add to your collection or wishlist, including set numbers, names, piece counts, conditions, themes, retail prices, and release years. This data is associated with your account.</p>
-
+          <p style={styles.text}>We store information about the LEGO sets you add to your collection or wishlist, including set numbers, names, piece counts, conditions, themes, retail prices, and release years.</p>
           <p style={styles.subheading}>Photos and Videos</p>
           <p style={styles.text}>If you choose to upload photos or videos of your sets, these files are stored securely via Supabase Storage. You control who can see them through your profile visibility settings.</p>
-
           <p style={styles.subheading}>Activity Data</p>
           <p style={styles.text}>We log activity such as adding or removing sets from your collection. This data is only visible to you in your Search History and is never shared with third parties.</p>
         </div>
@@ -65,7 +61,7 @@ export default function PrivacyScreen() {
           <div style={styles.thirdPartyList}>
             {[
               { name: 'Supabase', purpose: 'Database, authentication, and file storage. Your account data and uploads are stored on Supabase servers.', link: 'https://supabase.com/privacy' },
-              { name: 'Rebrickable', purpose: 'LEGO set database used to look up set information. Set searches may be sent to Rebrickable\'s API.', link: 'https://rebrickable.com/privacy/' },
+              { name: 'Rebrickable', purpose: "LEGO set database used to look up set information. Set searches may be sent to Rebrickable's API.", link: 'https://rebrickable.com/privacy/' },
               { name: 'BrickEconomy', purpose: 'Market value links open BrickEconomy in a new tab. We do not share your data with BrickEconomy.', link: 'https://www.brickeconomy.com/page/privacy' },
               { name: 'Vercel', purpose: 'Hosting provider for mybrickkeep.com. Standard web traffic logs may be retained by Vercel.', link: 'https://vercel.com/legal/privacy-policy' },
             ].map(s => (
@@ -131,49 +127,44 @@ export default function PrivacyScreen() {
             Contact Us
           </button>
         </div>
-
-        <div style={styles.footer}>
-          <button style={styles.aboutLink} onClick={() => navigate('/about')}>
-            About BrickKeep
-          </button>
-          <p style={styles.copy}>© {new Date().getFullYear()} BrickKeep. All rights reserved.</p>
-        </div>
       </div>
+      <Footer />
     </div>
   )
 }
 
 const styles: Record<string, React.CSSProperties> = {
   container: {
-    minHeight: '100vh',
-    color: '#FFFFFF'
-  },
-  header: {
     display: 'flex',
-    justifyContent: 'center',
-    padding: '16px 24px 0',
-    cursor: 'pointer'
-  },
-  logo: {
-    height: '80px',
-    objectFit: 'contain',
-    cursor: 'pointer'
+    flexDirection: 'column'
   },
   content: {
     maxWidth: '640px',
     margin: '0 auto',
-    padding: '24px'
+    padding: '24px',
+    width: '100%'
+  },
+  backBtn: {
+    background: 'none',
+    border: 'none',
+    color: Colors.yellow,
+    fontSize: '16px',
+    cursor: 'pointer',
+    marginBottom: '16px',
+    padding: 0
   },
   title: {
     fontSize: '32px',
     fontWeight: 'bold',
     color: Colors.yellow,
-    marginBottom: '8px'
+    marginBottom: '8px',
+    textAlign: 'center' as const
   },
   updated: {
     fontSize: '13px',
     color: 'rgba(255,255,255,0.4)',
-    marginBottom: '24px'
+    marginBottom: '24px',
+    textAlign: 'center' as const
   },
   card: {
     backgroundColor: 'rgba(0,8,20,0.6)',
@@ -260,25 +251,5 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 'bold',
     cursor: 'pointer',
     marginTop: '8px'
-  },
-  footer: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: '12px',
-    paddingBottom: '48px',
-    marginTop: '8px'
-  },
-  aboutLink: {
-    background: 'none',
-    border: 'none',
-    color: Colors.yellow,
-    fontSize: '14px',
-    cursor: 'pointer',
-    opacity: 0.8
-  },
-  copy: {
-    fontSize: '12px',
-    color: 'rgba(255,255,255,0.3)'
   }
 }
