@@ -275,7 +275,18 @@ export default function ProfileScreen() {
                   outerRadius={100}
                   paddingAngle={3}
                   dataKey="value"
-                  label={({ percent }) => percent ? `${(percent * 100).toFixed(0)}%` : ''}
+                  label={({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
+                  if (!percent || percent < 0.05 || midAngle === undefined || !cx || !cy || !innerRadius || !outerRadius) return null
+                  const RADIAN = Math.PI / 180
+                  const radius = innerRadius + (outerRadius - innerRadius) * 0.5
+                  const x = cx + radius * Math.cos(-midAngle * RADIAN)
+                  const y = cy + radius * Math.sin(-midAngle * RADIAN)
+                  return (
+                    <text x={x} y={y} fill="#001B3D" textAnchor="middle" dominantBaseline="central" fontSize={12} fontWeight="bold">
+                      {`${(percent * 100).toFixed(0)}%`}
+                    </text>
+                  )
+                }}
                   labelLine={false}
                 >
                   {themeData.map((_, index) => (
