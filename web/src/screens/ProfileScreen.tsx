@@ -149,57 +149,6 @@ export default function ProfileScreen() {
         <button style={styles.backBtn} onClick={() => navigate(-1)}>← Back</button>
         <h1 style={styles.title}>My Profile</h1>
 
-        {gallery.length > 0 && (
-          <div style={styles.galleryCard}>
-            <p style={styles.chartTitle}>My Gallery</p>
-            <div style={styles.galleryGrid}>
-              {gallery.map(item => (
-                <div key={item.id} style={styles.galleryItem}>
-                  {item.media_type === 'image' ? (
-                    <img
-                      src={getPublicUrl(item.storage_path)}
-                      alt={item.caption || item.label}
-                      style={styles.galleryImg}
-                      onClick={() => window.open(getPublicUrl(item.storage_path), '_blank')}
-                    />
-                  ) : (
-                    <video src={getPublicUrl(item.storage_path)} style={styles.galleryImg} controls />
-                  )}
-                  <div style={styles.galleryInfo}>
-                    {item.set_name && <p style={styles.gallerySetName}>{item.set_name}</p>}
-                    <span style={styles.galleryLabel}>{item.label.replace('_', ' ')}</span>
-                    {item.caption && <p style={styles.galleryCaption}>{item.caption}</p>}
-                    <div style={styles.galleryActions}>
-                      <button
-                        style={styles.galleryEditBtn}
-                        onClick={() => {
-                          const newCaption = window.prompt('Edit caption:', item.caption || '')
-                          if (newCaption !== null) {
-                            supabase.from('set_media').update({ caption: newCaption.trim() || null }).eq('id', item.id).then(() => fetchGallery())
-                          }
-                        }}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        style={styles.galleryDeleteBtn}
-                        onClick={async () => {
-                          if (!window.confirm('Delete this photo?')) return
-                          await supabase.storage.from('set-media').remove([item.storage_path])
-                          await supabase.from('set_media').delete().eq('id', item.id)
-                          fetchGallery()
-                        }}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
         <form onSubmit={handleSave} style={styles.form}>
           <p style={styles.sectionLabel}>Profile Visibility</p>
           <div style={styles.optionRow}>
@@ -264,6 +213,57 @@ export default function ProfileScreen() {
               </button>
             ))}
           </div>
+
+          {gallery.length > 0 && (
+          <div style={styles.galleryCard}>
+            <p style={styles.chartTitle}>My Gallery</p>
+            <div style={styles.galleryGrid}>
+              {gallery.map(item => (
+                <div key={item.id} style={styles.galleryItem}>
+                  {item.media_type === 'image' ? (
+                    <img
+                      src={getPublicUrl(item.storage_path)}
+                      alt={item.caption || item.label}
+                      style={styles.galleryImg}
+                      onClick={() => window.open(getPublicUrl(item.storage_path), '_blank')}
+                    />
+                  ) : (
+                    <video src={getPublicUrl(item.storage_path)} style={styles.galleryImg} controls />
+                  )}
+                  <div style={styles.galleryInfo}>
+                    {item.set_name && <p style={styles.gallerySetName}>{item.set_name}</p>}
+                    <span style={styles.galleryLabel}>{item.label.replace('_', ' ')}</span>
+                    {item.caption && <p style={styles.galleryCaption}>{item.caption}</p>}
+                    <div style={styles.galleryActions}>
+                      <button
+                        style={styles.galleryEditBtn}
+                        onClick={() => {
+                          const newCaption = window.prompt('Edit caption:', item.caption || '')
+                          if (newCaption !== null) {
+                            supabase.from('set_media').update({ caption: newCaption.trim() || null }).eq('id', item.id).then(() => fetchGallery())
+                          }
+                        }}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        style={styles.galleryDeleteBtn}
+                        onClick={async () => {
+                          if (!window.confirm('Delete this photo?')) return
+                          await supabase.storage.from('set-media').remove([item.storage_path])
+                          await supabase.from('set_media').delete().eq('id', item.id)
+                          fetchGallery()
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
           <button style={styles.saveBtn} type="submit" disabled={saving}>
             {saving ? 'Saving...' : saved ? '✓ Saved!' : 'Save Changes'}
