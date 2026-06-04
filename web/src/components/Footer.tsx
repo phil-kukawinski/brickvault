@@ -20,12 +20,14 @@ export default function Footer() {
 
       <div style={styles.links}>
           {[
-            { label: 'Home', path: '/profile' },
-            { label: 'My Collection', path: '/collection' },
-            { label: 'Add a Set', path: '/scan' },
-            { label: 'Profile', path: '/profile' },
-            { label: 'Search History', path: '/history' },
-          ].map((item, index, arr) => (
+          { label: 'Home', path: '/profile' },
+          { label: 'My Collection', path: '/collection' },
+          { label: 'Add a Set', path: '/scan' },
+          { label: 'Profile', path: '/profile' },
+          { label: 'Search History', path: '/history' },
+          { label: 'About', path: '/about' },
+          { label: 'Privacy', path: '/privacy' },
+        ].map((item, index, arr) => (
             <span key={item.path} style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
               <button style={styles.link} onClick={() => navigate(item.path)}>
                 {item.label}
