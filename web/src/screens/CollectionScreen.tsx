@@ -189,13 +189,16 @@ export default function CollectionScreen() {
               <div style={styles.cardContent}>
                 <p style={styles.cardName}>{item.name}</p>
                 <p style={styles.cardDetail}>#{item.set_number}</p>
-<p style={styles.cardDetail}>{item.piece_count} pieces</p>
-{item.release_year && (
-  <p style={styles.cardDetail}>Released: {item.release_year}{item.retired_year ? ` · Retired: ${item.retired_year}` : ''}</p>
-)}
-{item.theme && (
-  <p style={styles.cardDetail}>{item.theme}</p>
-)}
+                <p style={styles.cardDetail}>{item.piece_count} pieces</p>
+                {item.release_year && (
+                  <p style={styles.cardDetail}>Released: {item.release_year}{item.retired_year ? ` · Retired: ${item.retired_year}` : ''}</p>
+                )}
+                {item.theme && (
+                  <p style={styles.cardDetail}>{item.theme}</p>
+                )}
+                {item.retail_price && (
+                  <p style={styles.cardDetail}>Retail: ${item.retail_price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                )}
                 <div style={styles.cardFooter}>
                   <span style={{ ...styles.badge, ...(item.status === 'owned' ? styles.badgeOwned : styles.badgeWishlist) }}>
                     {item.status === 'owned' ? '📦 Owned' : '⭐ Wishlist'}
