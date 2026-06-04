@@ -6,7 +6,7 @@ import { Colors } from '../lib/theme'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import { BrowserMultiFormatReader } from '@zxing/browser'
-import { fetchSetBySetNum, searchSets, fetchThemeById, fetchSetPrice } from '../lib/rebrickable'
+import { fetchSetBySetNum, searchSets, fetchThemeById } from '../lib/rebrickable'
 
 export default function ScanScreen() {
   const [input, setInput] = useState('')
@@ -21,6 +21,8 @@ export default function ScanScreen() {
   const videoRef = useRef<HTMLVideoElement>(null)
   const readerRef = useRef<BrowserMultiFormatReader | null>(null)
   const navigate = useNavigate()
+  const [retailPrice, setRetailPrice] = useState<string>('')
+  
 
   useEffect(() => {
     fetchOwned()
@@ -133,7 +135,6 @@ export default function ScanScreen() {
     }
 
     const theme = await fetchThemeById(foundSet.theme_id)
-    const retailPrice = await fetchSetPrice(foundSet.set_num)
 
     const { error } = await supabase.from('collection').insert({
       user_id: user.id,
@@ -144,7 +145,7 @@ export default function ScanScreen() {
       status,
       condition: status === 'owned' ? condition : null,
       theme: theme || null,
-      retail_price: retailPrice || null,
+      retail_price: retailPrice ? parseFloat(retailPrice) : null,
       release_year: foundSet.year || null
     })
 
@@ -165,6 +166,7 @@ export default function ScanScreen() {
     setInput('')
     setResults([])
     setCondition('sealed')
+    setRetailPrice('')
   }
 
   return (
@@ -239,6 +241,18 @@ export default function ScanScreen() {
               ⚠️ This set is already in your vault
             </div>
           )}
+
+          <p style={styles.conditionLabel}>Retail Price (optional)</p>
+          <div style={styles.priceRow}>
+            <span style={styles.priceDollar}>$</span>
+            <input
+              style={styles.priceInput}
+              type="number"
+              placeholder="0.00"
+              value={retailPrice}
+              onChange={e => setRetailPrice(e.target.value)}
+            />
+          </div>
 
           <button style={styles.addBtn} onClick={() => addToCollection('owned')}>
             📦 Add to Collection
@@ -563,5 +577,27 @@ const styles: Record<string, React.CSSProperties> = {
     cursor: 'pointer',
     textAlign: 'center' as const,
     textDecoration: 'none'
+  },
+  priceRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    maxWidth: '400px',
+    width: '100%'
+  },
+  priceDollar: {
+    fontSize: '18px',
+    color: Colors.white,
+    fontWeight: 'bold'
+  },
+  priceInput: {
+    flex: 1,
+    backgroundColor: 'rgba(0,8,20,0.6)',
+    border: '1px solid rgba(255,255,255,0.2)',
+    borderRadius: '8px',
+    padding: '12px',
+    fontSize: '15px',
+    color: Colors.white,
+    outline: 'none'
   },
 }
