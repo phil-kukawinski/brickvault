@@ -17,6 +17,9 @@ export default function ScanScreen() {
   const [retailPrice, setRetailPrice] = useState<string>('')
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const navigate = useNavigate()
+  const [searchQuery, setSearchQuery] = useState('')
+  const [hasMore, setHasMore] = useState(false)
+  const [page, setPage] = useState(1)
 
   useEffect(() => {
     fetchOwned()
@@ -52,24 +55,29 @@ export default function ScanScreen() {
     await handleSearchWithInput(input)
   }
 
-  async function handleSearchWithInput(value: string) {
+  async function handleSearchWithInput(value: string, pageNum = 1) {
     if (!value.trim()) return
     setSearching(true)
-    setResults([])
-    setFoundSet(null)
+    if (pageNum === 1) {
+      setResults([])
+      setFoundSet(null)
+      setSearchQuery(value)
+    }
+    setPage(pageNum)
 
     const bySetNum = await fetchSetBySetNum(
       value.includes('-') ? value : `${value}-1`
     )
-    if (bySetNum) {
+    if (bySetNum && pageNum === 1) {
       setSearching(false)
       setFoundSet(bySetNum)
       return
     }
 
-    const res = await searchSets(value)
+    const res = await searchSets(value, pageNum)
     setSearching(false)
-    setResults(res)
+    setHasMore(res.length === 50)
+    setResults(prev => pageNum === 1 ? res : [...prev, ...res])
   }
 
   async function handleBarcodeScan(e: React.ChangeEvent<HTMLInputElement>) {
@@ -277,6 +285,14 @@ export default function ScanScreen() {
         <div style={styles.centered}>
           <p style={{ color: 'rgba(255,255,255,0.6)' }}>No results found. Try a different search.</p>
         </div>
+      )}
+      {results.length > 0 && !foundSet && !searching && hasMore && (
+        <button
+          style={styles.loadMoreBtn}
+          onClick={() => handleSearchWithInput(searchQuery, page + 1)}
+        >
+          Load more results
+        </button>
       )}
       <Footer />
     </div>
@@ -539,5 +555,18 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '15px',
     color: Colors.white,
     outline: 'none'
-  }
+  },
+  loadMoreBtn: {
+    display: 'block',
+    width: 'calc(100% - 48px)',
+    margin: '12px 24px',
+    padding: '14px',
+    borderRadius: '8px',
+    border: '1px solid rgba(255,255,255,0.2)',
+    backgroundColor: 'rgba(0,8,20,0.6)',
+    color: Colors.yellow,
+    fontSize: '15px',
+    fontWeight: 'bold',
+    cursor: 'pointer'
+  },
 }

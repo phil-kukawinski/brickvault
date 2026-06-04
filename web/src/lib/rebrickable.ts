@@ -38,11 +38,13 @@ export async function fetchSetBySetNum(setNum: string): Promise<LegoSet | null> 
   }
 }
 
-export async function searchSets(query: string): Promise<LegoSet[]> {
+export async function searchSets(query: string, page = 1): Promise<LegoSet[]> {
   try {
     const response = await fetch(
-      `${BASE_URL}/sets/?search=${encodeURIComponent(query)}&page_size=20`,
-      { headers: { Authorization: `key ${REBRICKABLE_API_KEY}` } }
+      `${BASE_URL}/sets/?search=${encodeURIComponent(query)}&page_size=50&page=${page}&ordering=-year`,
+      {
+        headers: { Authorization: `key ${REBRICKABLE_API_KEY}` }
+      }
     )
     if (!response.ok) return []
     const data = await response.json()
