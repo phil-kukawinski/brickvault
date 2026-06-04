@@ -5,7 +5,6 @@ import type { LegoSet } from '../lib/rebrickable'
 import { Colors } from '../lib/theme'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
-import { BrowserMultiFormatReader } from '@zxing/browser'
 import { fetchSetBySetNum, searchSets, fetchThemeById } from '../lib/rebrickable'
 
 export default function ScanScreen() {
@@ -14,23 +13,13 @@ export default function ScanScreen() {
   const [searching, setSearching] = useState(false)
   const [foundSet, setFoundSet] = useState<LegoSet | null>(null)
   const [condition, setCondition] = useState<'sealed' | 'built' | 'partial' | 'incomplete'>('sealed')
-  const [scanning, setScanning] = useState(false)
-  const [scanError, setScanError] = useState('')
   const [ownedSetNumbers, setOwnedSetNumbers] = useState<string[]>([])
-  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const readerRef = useRef<BrowserMultiFormatReader | null>(null)
-  const navigate = useNavigate()
   const [retailPrice, setRetailPrice] = useState<string>('')
-  
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const navigate = useNavigate()
 
   useEffect(() => {
     fetchOwned()
-    return () => {
-      if (readerRef.current) {
-        BrowserMultiFormatReader.releaseAllStreams()
-      }
-    }
   }, [])
 
   async function fetchOwned() {
@@ -83,43 +72,27 @@ export default function ScanScreen() {
     setResults(res)
   }
 
-  async function startScanner() {
-    setScanError('')
-    setScanning(true)
-    try {
-      readerRef.current = new BrowserMultiFormatReader()
-      const devices = await BrowserMultiFormatReader.listVideoInputDevices()
-      if (devices.length === 0) {
-        setScanError('No camera found on this device.')
-        setScanning(false)
-        return
-      }
-      const deviceId = devices[devices.length - 1].deviceId
-      await readerRef.current.decodeFromVideoDevice(
-        deviceId,
-        videoRef.current!,
-        async (result, _err) => {
-          if (result) {
-            stopScanner()
-            const text = result.getText()
-            setInput(text)
-            setScanning(false)
-            await handleSearchWithInput(text)
-          }
+  async function handleBarcodeScan(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if ('BarcodeDetector' in window) {
+      try {
+        const detector = new (window as any).BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e'] })
+        const bitmap = await createImageBitmap(file)
+        const barcodes = await detector.detect(bitmap)
+        if (barcodes.length > 0) {
+          const value = barcodes[0].rawValue
+          setInput(value)
+          await handleSearchWithInput(value)
+        } else {
+          alert('No barcode detected. Try again with better lighting.')
         }
-      )
-    } catch {
-      setScanError('Camera access denied or not available.')
-      setScanning(false)
+      } catch {
+        alert('Could not read barcode. Try entering the set number manually.')
+      }
+    } else {
+      alert('Barcode scanning is not supported on this browser. Please enter the set number manually.')
     }
-  }
-
-  function stopScanner() {
-    if (readerRef.current) {
-      BrowserMultiFormatReader.releaseAllStreams()
-      readerRef.current = null
-    }
-    setScanning(false)
   }
 
   async function addToCollection(status: 'owned' | 'wishlist') {
@@ -190,9 +163,16 @@ export default function ScanScreen() {
         <button style={styles.searchBtn} onClick={handleSearch}>Search</button>
       </div>
 
-      <button style={styles.scanBtn} onClick={startScanner}>
+      <label style={styles.scanBtn}>
         📷 Scan Barcode
-      </button>
+        <input
+          type="file"
+          accept="image/*"
+          capture="environment"
+          style={{ display: 'none' }}
+          onChange={handleBarcodeScan}
+        />
+      </label>
 
       <a
         href="https://brickit.app"
@@ -202,19 +182,6 @@ export default function ScanScreen() {
       >
         🧱 Have loose bricks? Build something with Brickit
       </a>
-
-      {scanError && (
-        <p style={styles.scanError}>{scanError}</p>
-      )}
-
-      {scanning && (
-        <div style={styles.scannerContainer}>
-          <video ref={videoRef} style={styles.video} autoPlay playsInline muted />
-          <button style={styles.stopScanBtn} onClick={stopScanner}>
-            Stop Scanning
-          </button>
-        </div>
-      )}
 
       {searching && (
         <div style={styles.centered}>
@@ -532,37 +499,8 @@ const styles: Record<string, React.CSSProperties> = {
     backgroundColor: 'rgba(0,8,20,0.6)',
     color: Colors.white,
     fontSize: '15px',
-    cursor: 'pointer'
-  },
-  scannerContainer: {
-    margin: '0 24px',
-    borderRadius: '12px',
-    overflow: 'hidden',
-    position: 'relative' as const
-  },
-  video: {
-    width: '100%',
-    borderRadius: '12px',
-    display: 'block'
-  },
-  stopScanBtn: {
-    position: 'absolute' as const,
-    bottom: '16px',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    backgroundColor: 'rgba(0,8,20,0.8)',
-    color: Colors.yellow,
-    border: `1px solid ${Colors.yellow}`,
-    borderRadius: '20px',
-    padding: '10px 24px',
-    fontSize: '14px',
-    cursor: 'pointer'
-  },
-  scanError: {
-    color: '#ff6b6b',
-    fontSize: '14px',
-    textAlign: 'center' as const,
-    padding: '0 24px'
+    cursor: 'pointer',
+    textAlign: 'center' as const
   },
   brickitBtn: {
     display: 'block',
@@ -599,5 +537,5 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '15px',
     color: Colors.white,
     outline: 'none'
-  },
+  }
 }

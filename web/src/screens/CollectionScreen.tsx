@@ -32,6 +32,8 @@ export default function CollectionScreen() {
   const [saving, setSaving] = useState(false)
   const navigate = useNavigate()
   const [userId, setUserId] = useState<string>('')
+  const [editingPriceId, setEditingPriceId] = useState<string | null>(null)
+  const [editingPriceValue, setEditingPriceValue] = useState<string>('')
   const [sort, setSort] = useState<'newest' | 'oldest' | 'name' | 'pieces' | 'theme'>('newest')
 
   useEffect(() => {
@@ -74,10 +76,24 @@ export default function CollectionScreen() {
     setSaving(true)
     await supabase
       .from('collection')
-      .update({ status: editStatus, condition: editStatus === 'owned' ? editCondition : null })
+      .update({
+        status: editStatus,
+        condition: editStatus === 'owned' ? editCondition : null,
+        retail_price: selected.retail_price
+      })
       .eq('id', selected.id)
     setSaving(false)
     setSelected(null)
+    fetchCollection()
+  }
+
+  async function handleSavePrice(itemId: string) {
+    await supabase
+      .from('collection')
+      .update({ retail_price: editingPriceValue ? parseFloat(editingPriceValue) : null })
+      .eq('id', itemId)
+    setEditingPriceId(null)
+    setEditingPriceValue('')
     fetchCollection()
   }
 
@@ -199,6 +215,41 @@ export default function CollectionScreen() {
                 {item.retail_price && (
                   <p style={styles.cardDetail}>Retail: ${item.retail_price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                 )}
+                {editingPriceId === item.id ? (
+                  <div style={styles.inlinePriceEdit} onClick={e => e.stopPropagation()}>
+                    <span style={{ color: Colors.white, fontSize: '13px' }}>$</span>
+                    <input
+                      style={styles.inlinePriceInput}
+                      type="number"
+                      placeholder="0.00"
+                      value={editingPriceValue}
+                      onChange={e => setEditingPriceValue(e.target.value)}
+                      autoFocus
+                    />
+                    <button
+                      style={styles.inlinePriceSave}
+                      onClick={e => { e.stopPropagation(); handleSavePrice(item.id) }}
+                    >
+                      Save
+                    </button>
+                    <button
+                      style={styles.inlinePriceCancel}
+                      onClick={e => { e.stopPropagation(); setEditingPriceId(null) }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <p
+                    style={{ ...styles.cardDetail, color: item.retail_price ? 'rgba(255,255,255,0.6)' : Colors.yellow, cursor: 'pointer' }}
+                    onClick={e => { e.stopPropagation(); setEditingPriceId(item.id); setEditingPriceValue(item.retail_price?.toString() || '') }}
+                  >
+                    {item.retail_price
+                      ? `Retail: $${item.retail_price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                      : 'Missing retail price'
+                    }
+                  </p>
+                )}
                 <div style={styles.cardFooter}>
                   <span style={{ ...styles.badge, ...(item.status === 'owned' ? styles.badgeOwned : styles.badgeWishlist) }}>
                     {item.status === 'owned' ? '📦 Owned' : '⭐ Wishlist'}
@@ -236,6 +287,21 @@ export default function CollectionScreen() {
                   {s === 'owned' ? '📦 Owned' : '⭐ Wishlist'}
                 </button>
               ))}
+            </div>
+
+            <p style={styles.sectionLabel}>Retail Price</p>
+            <div style={styles.modalPriceRow}>
+              <span style={styles.priceDollar}>$</span>
+              <input
+                style={styles.modalPriceInput}
+                type="number"
+                placeholder="0.00"
+                value={selected.retail_price?.toString() || ''}
+                onChange={async e => {
+                  const val = e.target.value
+                  setSelected({ ...selected, retail_price: val ? parseFloat(val) : null })
+                }}
+              />
             </div>
 
             {editStatus === 'owned' && (
@@ -637,5 +703,59 @@ const styles: Record<string, React.CSSProperties> = {
     borderColor: Colors.yellow,
     color: Colors.text.onYellow,
     fontWeight: 'bold'
+  },
+  inlinePriceEdit: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    marginTop: '4px'
+  },
+  inlinePriceInput: {
+    width: '80px',
+    backgroundColor: 'rgba(0,8,20,0.6)',
+    border: '1px solid rgba(255,255,255,0.2)',
+    borderRadius: '6px',
+    padding: '4px 8px',
+    fontSize: '13px',
+    color: Colors.white,
+    outline: 'none'
+  },
+  inlinePriceSave: {
+    backgroundColor: Colors.yellow,
+    color: Colors.text.onYellow,
+    border: 'none',
+    borderRadius: '6px',
+    padding: '4px 10px',
+    fontSize: '12px',
+    fontWeight: 'bold',
+    cursor: 'pointer'
+  },
+  inlinePriceCancel: {
+    background: 'none',
+    border: 'none',
+    color: 'rgba(255,255,255,0.4)',
+    fontSize: '12px',
+    cursor: 'pointer'
+  },
+  modalPriceRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    marginTop: '8px'
+  },
+  priceDollar: {
+    fontSize: '18px',
+    color: Colors.white,
+    fontWeight: 'bold'
+  },
+  modalPriceInput: {
+    flex: 1,
+    backgroundColor: 'rgba(0,8,20,0.6)',
+    border: '1px solid rgba(255,255,255,0.2)',
+    borderRadius: '8px',
+    padding: '12px',
+    fontSize: '15px',
+    color: Colors.white,
+    outline: 'none'
   },
 }
