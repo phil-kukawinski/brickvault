@@ -275,6 +275,8 @@ export default function ProfileScreen() {
                   outerRadius={100}
                   paddingAngle={3}
                   dataKey="value"
+                  label={({ percent }) => percent ? `${(percent * 100).toFixed(0)}%` : ''}
+                  labelLine={false}
                 >
                   {themeData.map((_, index) => (
                     <Cell
