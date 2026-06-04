@@ -229,6 +229,13 @@ export default function ProfileScreen() {
           </div>
         </div>
 
+        <button
+          style={styles.addSetBtn}
+          onClick={() => navigate('/scan')}
+        >
+          + Add a Set
+        </button>
+
         {themeData.length > 0 && (
           <div style={styles.chartCard}>
             <p style={styles.chartTitle}>Collection by Theme</p>
@@ -774,5 +781,17 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '14px',
     textDecoration: 'none',
     marginTop: '8px'
+  },
+  addSetBtn: {
+    backgroundColor: Colors.yellow,
+    color: Colors.text.onYellow,
+    border: 'none',
+    borderRadius: '8px',
+    padding: '14px',
+    fontSize: '15px',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    width: '100%',
+    marginBottom: '24px'
   },
 }
