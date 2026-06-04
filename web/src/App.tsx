@@ -12,6 +12,7 @@ import BottomNav from './components/BottomNav'
 import PublicProfileScreen from './screens/PublicProfileScreen'
 import AboutScreen from './screens/AboutScreen'
 import PrivacyScreen from './screens/PrivacyScreen'
+import HomeScreen from './screens/HomeScreen'
 
 function App() {
   const [session, setSession] = useState<any>(null)
@@ -39,8 +40,8 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={!session ? <LandingScreen /> : <Navigate to="/profile" />} />
-      <Route path="/login" element={!session ? <LoginScreen /> : <Navigate to="/profile" />} />
-      <Route path="/register" element={!session ? <RegisterScreen /> : <Navigate to="/profile" />} />
+      <Route path="/login" element={!session ? <LoginScreen /> : <Navigate to="/" />} />
+      <Route path="/register" element={!session ? <RegisterScreen /> : <Navigate to="/" />} />
       <Route path="/collection" element={session ? <><CollectionScreen /><BottomNav /></> : <Navigate to="/" />} />
       <Route path="/scan" element={session ? <><ScanScreen /><BottomNav /></> : <Navigate to="/" />} />
       <Route path="/profile" element={session ? <><ProfileScreen /><BottomNav /></> : <Navigate to="/" />} />
@@ -48,6 +49,7 @@ function App() {
       <Route path="/history" element={session ? <><SearchHistoryScreen /><BottomNav /></> : <Navigate to="/" />} />
       <Route path="/about" element={<AboutScreen />} />
       <Route path="/privacy" element={<PrivacyScreen />} />
+      <Route path="/" element={!session ? <LandingScreen /> : <><HomeScreen /><BottomNav /></>} />
     </Routes>
   )
 }
