@@ -212,9 +212,6 @@ export default function CollectionScreen() {
                 {item.theme && (
                   <p style={styles.cardDetail}>{item.theme}</p>
                 )}
-                {item.retail_price && (
-                  <p style={styles.cardDetail}>Retail: ${item.retail_price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                )}
                 {editingPriceId === item.id ? (
                   <div style={styles.inlinePriceEdit} onClick={e => e.stopPropagation()}>
                     <span style={{ color: Colors.white, fontSize: '13px' }}>$</span>
