@@ -5,11 +5,22 @@ import { Colors } from '../lib/theme'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 
-const THEMES = [
+const THEMES_PRIMARY = [
   'Star Wars', 'Technic', 'City', 'Creator', 'Harry Potter',
   'Marvel', 'DC', 'Architecture', 'Ideas', 'Ninjago',
   'Friends', 'Minecraft', 'Speed Champions', 'Icons', 'Art'
 ]
+
+const THEMES_EXTENDED = [
+  'Avatar', 'Back to the Future', 'Batman', 'BrickHeadz', 'Bionicle',
+  'Botanical Collection', 'Castle', 'Classic', 'Collectible Minifigures',
+  'Creator Expert', 'Disney', 'Dots', 'Dreamzzz', 'Duplo',
+  'Education', 'Elves', 'Fortnite', 'Ghostbusters', 'Hidden Side',
+  'Indiana Jones', 'Jurassic World', 'Legends of Chima', 'Lord of the Rings',
+  'Mindstorms', 'Monkie Kid', 'Nexo Knights', 'Overwatch', 'Pirates',
+  'Powered Up', 'Seasonal', 'Sonic', 'Space', 'Stranger Things',
+  'The Hobbit', 'Trolls', 'Unikitty', 'Vidiyo'
+].sort()
 
 type Profile = {
   id: string
@@ -47,6 +58,7 @@ export default function ProfileScreen() {
   const [gallery, setGallery] = useState<GalleryItem[]>([])
   const [publicProfile, setPublicProfile] = useState(true)
   const navigate = useNavigate()
+  const [showMoreThemes, setShowMoreThemes] = useState(false)
   const [gallerySort, setGallerySort] = useState<'newest' | 'oldest' | 'label'>('newest')
 
   useEffect(() => {
@@ -208,12 +220,36 @@ export default function ProfileScreen() {
 
           <p style={styles.sectionLabel}>Favorite themes</p>
           <div style={styles.themeGrid}>
-            {THEMES.map(theme => (
-              <button key={theme} type="button" style={{ ...styles.themeBtn, ...(favoriteThemes.includes(theme) ? styles.themeBtnActive : {}) }} onClick={() => toggleTheme(theme)}>
+            {THEMES_PRIMARY.map(theme => (
+              <button key={theme} type="button"
+                style={{ ...styles.themeBtn, ...(favoriteThemes.includes(theme) ? styles.themeBtnActive : {}) }}
+                onClick={() => toggleTheme(theme)}
+              >
                 {theme}
               </button>
             ))}
           </div>
+
+          {showMoreThemes && (
+            <div style={styles.themeGrid}>
+              {THEMES_EXTENDED.map(theme => (
+                <button key={theme} type="button"
+                  style={{ ...styles.themeBtn, ...(favoriteThemes.includes(theme) ? styles.themeBtnActive : {}) }}
+                  onClick={() => toggleTheme(theme)}
+                >
+                  {theme}
+                </button>
+              ))}
+            </div>
+          )}
+
+          <button
+            type="button"
+            style={styles.showMoreBtn}
+            onClick={() => setShowMoreThemes(!showMoreThemes)}
+          >
+            {showMoreThemes ? 'Show Less' : 'Show More Themes'}
+          </button>
 
           {gallery.length > 0 && (
             <>
@@ -363,5 +399,15 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '11px',
     color: 'rgba(255,255,255,0.3)',
     marginTop: '4px'
+  },
+  showMoreBtn: {
+    background: 'none',
+    border: 'none',
+    color: Colors.yellow,
+    fontSize: '13px',
+    cursor: 'pointer',
+    padding: '4px 0',
+    textAlign: 'left' as const,
+    marginBottom: '8px'
   },
 }
