@@ -47,6 +47,7 @@ export default function ProfileScreen() {
   const [gallery, setGallery] = useState<GalleryItem[]>([])
   const [publicProfile, setPublicProfile] = useState(true)
   const navigate = useNavigate()
+  const [gallerySort, setGallerySort] = useState<'newest' | 'oldest' | 'label'>('newest')
 
   useEffect(() => {
     fetchProfile()
@@ -215,55 +216,81 @@ export default function ProfileScreen() {
           </div>
 
           {gallery.length > 0 && (
-          <div style={styles.galleryCard}>
-            <p style={styles.chartTitle}>My Gallery</p>
-            <div style={styles.galleryGrid}>
-              {gallery.map(item => (
-                <div key={item.id} style={styles.galleryItem}>
-                  {item.media_type === 'image' ? (
-                    <img
-                      src={getPublicUrl(item.storage_path)}
-                      alt={item.caption || item.label}
-                      style={styles.galleryImg}
-                      onClick={() => window.open(getPublicUrl(item.storage_path), '_blank')}
-                    />
-                  ) : (
-                    <video src={getPublicUrl(item.storage_path)} style={styles.galleryImg} controls />
-                  )}
-                  <div style={styles.galleryInfo}>
-                    {item.set_name && <p style={styles.gallerySetName}>{item.set_name}</p>}
-                    <span style={styles.galleryLabel}>{item.label.replace('_', ' ')}</span>
-                    {item.caption && <p style={styles.galleryCaption}>{item.caption}</p>}
-                    <div style={styles.galleryActions}>
-                      <button
-                        style={styles.galleryEditBtn}
-                        onClick={() => {
-                          const newCaption = window.prompt('Edit caption:', item.caption || '')
-                          if (newCaption !== null) {
-                            supabase.from('set_media').update({ caption: newCaption.trim() || null }).eq('id', item.id).then(() => fetchGallery())
-                          }
-                        }}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        style={styles.galleryDeleteBtn}
-                        onClick={async () => {
-                          if (!window.confirm('Delete this photo?')) return
-                          await supabase.storage.from('set-media').remove([item.storage_path])
-                          await supabase.from('set_media').delete().eq('id', item.id)
-                          fetchGallery()
-                        }}
-                      >
-                        Delete
-                      </button>
+            <>
+              <p style={styles.sectionLabel}>My Gallery</p>
+              <div style={styles.gallerySortRow}>
+                {([
+                  { value: 'newest', label: 'Newest' },
+                  { value: 'oldest', label: 'Oldest' },
+                  { value: 'label', label: 'Type' }
+                ] as const).map(s => (
+                  <button
+                    key={s.value}
+                    type="button"
+                    style={{ ...styles.gallerySortBtn, ...(gallerySort === s.value ? styles.gallerySortBtnActive : {}) }}
+                    onClick={() => setGallerySort(s.value)}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
+              <div style={styles.galleryCard}>
+                <div style={styles.galleryGrid}>
+                  {[...gallery].sort((a, b) => {
+                    if (gallerySort === 'newest') return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+                    if (gallerySort === 'oldest') return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+                    if (gallerySort === 'label') return a.label.localeCompare(b.label)
+                    return 0
+                  }).map(item => (
+                    <div key={item.id} style={styles.galleryItem}>
+                      {item.media_type === 'image' ? (
+                        <img
+                          src={getPublicUrl(item.storage_path)}
+                          alt={item.caption || item.label}
+                          style={styles.galleryImg}
+                          onClick={() => window.open(getPublicUrl(item.storage_path), '_blank')}
+                        />
+                      ) : (
+                        <video src={getPublicUrl(item.storage_path)} style={styles.galleryImg} controls />
+                      )}
+                      <div style={styles.galleryInfo}>
+                        {item.set_name && <p style={styles.gallerySetName}>{item.set_name}</p>}
+                        <span style={styles.galleryLabel}>{item.label.replace('_', ' ')}</span>
+                        {item.caption && <p style={styles.galleryCaption}>{item.caption}</p>}
+                        <p style={styles.galleryDate}>
+                          {new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </p>
+                        <div style={styles.galleryActions}>
+                          <button
+                            style={styles.galleryEditBtn}
+                            onClick={() => {
+                              const newCaption = window.prompt('Edit caption:', item.caption || '')
+                              if (newCaption !== null) {
+                                supabase.from('set_media').update({ caption: newCaption.trim() || null }).eq('id', item.id).then(() => fetchGallery())
+                              }
+                            }}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            style={styles.galleryDeleteBtn}
+                            onClick={async () => {
+                              if (!window.confirm('Delete this photo?')) return
+                              await supabase.storage.from('set-media').remove([item.storage_path])
+                              await supabase.from('set_media').delete().eq('id', item.id)
+                              fetchGallery()
+                            }}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
+              </div>
+            </>
+          )}
 
           <button style={styles.saveBtn} type="submit" disabled={saving}>
             {saving ? 'Saving...' : saved ? '✓ Saved!' : 'Save Changes'}
@@ -310,5 +337,31 @@ const styles: Record<string, React.CSSProperties> = {
   galleryActions: { display: 'flex', gap: '8px', marginTop: '8px' },
   galleryEditBtn: { background: 'none', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '6px', color: Colors.white, fontSize: '11px', padding: '4px 10px', cursor: 'pointer' },
   galleryDeleteBtn: { background: 'none', border: '1px solid rgba(255,0,0,0.3)', borderRadius: '6px', color: '#ff6b6b', fontSize: '11px', padding: '4px 10px', cursor: 'pointer' },
-  addSetBtn: { backgroundColor: Colors.yellow, color: Colors.text.onYellow, border: 'none', borderRadius: '8px', padding: '14px', fontSize: '15px', fontWeight: 'bold', cursor: 'pointer', width: '100%', marginBottom: '24px' }
+  addSetBtn: { backgroundColor: Colors.yellow, color: Colors.text.onYellow, border: 'none', borderRadius: '8px', padding: '14px', fontSize: '15px', fontWeight: 'bold', cursor: 'pointer', width: '100%', marginBottom: '24px' },
+  gallerySortRow: {
+    display: 'flex',
+    gap: '8px',
+    marginBottom: '12px',
+    flexWrap: 'wrap' as const
+  },
+  gallerySortBtn: {
+    padding: '8px 14px',
+    borderRadius: '20px',
+    border: '1px solid rgba(255,255,255,0.2)',
+    backgroundColor: 'rgba(0,8,20,0.6)',
+    color: Colors.white,
+    fontSize: '13px',
+    cursor: 'pointer'
+  },
+  gallerySortBtnActive: {
+    backgroundColor: Colors.yellow,
+    borderColor: Colors.yellow,
+    color: Colors.text.onYellow,
+    fontWeight: 'bold'
+  },
+  galleryDate: {
+    fontSize: '11px',
+    color: 'rgba(255,255,255,0.3)',
+    marginTop: '4px'
+  },
 }
