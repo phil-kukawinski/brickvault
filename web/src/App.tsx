@@ -39,7 +39,7 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={!session ? <LandingScreen /> : <Navigate to="/profile" />} />
+      <Route path="/" element={!session ? <LandingScreen /> : <><HomeScreen /><BottomNav /></>} />
       <Route path="/login" element={!session ? <LoginScreen /> : <Navigate to="/" />} />
       <Route path="/register" element={!session ? <RegisterScreen /> : <Navigate to="/" />} />
       <Route path="/collection" element={session ? <><CollectionScreen /><BottomNav /></> : <Navigate to="/" />} />
@@ -49,7 +49,6 @@ function App() {
       <Route path="/history" element={session ? <><SearchHistoryScreen /><BottomNav /></> : <Navigate to="/" />} />
       <Route path="/about" element={<AboutScreen />} />
       <Route path="/privacy" element={<PrivacyScreen />} />
-      <Route path="/" element={!session ? <LandingScreen /> : <><HomeScreen /><BottomNav /></>} />
     </Routes>
   )
 }
