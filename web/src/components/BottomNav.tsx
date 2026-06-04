@@ -1,7 +1,7 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 
 const NAV_ITEMS = [
-  { label: 'Home', path: '/', icon: '🏠' },
+  { label: 'Home', path: '/profile', icon: '🏠' },
   { label: 'Collection', path: '/collection', icon: '📦' },
   { label: 'Add', path: '/scan', icon: '➕' },
   { label: 'Profile', path: '/profile', icon: '👤' },

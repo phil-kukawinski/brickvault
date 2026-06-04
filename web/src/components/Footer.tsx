@@ -20,7 +20,7 @@ export default function Footer() {
 
       <div style={styles.links}>
           {[
-            { label: 'Home', path: '/' },
+            { label: 'Home', path: '/profile' },
             { label: 'My Collection', path: '/collection' },
             { label: 'Add a Set', path: '/scan' },
             { label: 'Profile', path: '/profile' },

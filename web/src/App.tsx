@@ -37,11 +37,9 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={!session ? <LandingScreen /> : (
-        <><HomeScreen /><BottomNav /></>
-      )} />
-      <Route path="/login" element={!session ? <LoginScreen /> : <Navigate to="/" />} />
-      <Route path="/register" element={!session ? <RegisterScreen /> : <Navigate to="/" />} />
+      <Route path="/" element={!session ? <LandingScreen /> : <Navigate to="/profile" />} />
+      <Route path="/login" element={!session ? <LoginScreen /> : <Navigate to="/profile" />} />
+      <Route path="/register" element={!session ? <RegisterScreen /> : <Navigate to="/profile" />} />
       <Route path="/collection" element={session ? <><CollectionScreen /><BottomNav /></> : <Navigate to="/" />} />
       <Route path="/scan" element={session ? <><ScanScreen /><BottomNav /></> : <Navigate to="/" />} />
       <Route path="/profile" element={session ? <><ProfileScreen /><BottomNav /></> : <Navigate to="/" />} />

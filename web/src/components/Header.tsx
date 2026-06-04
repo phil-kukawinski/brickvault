@@ -34,7 +34,7 @@ export default function Header() {
           <div style={styles.overlay} onClick={() => setOpen(false)} />
           <div style={styles.dropdown}>
             {[
-              { label: 'Home', path: '/', external: false },
+              { label: 'Home', path: '/profile' },
               { label: 'My Collection', path: '/collection', external: false },
               { label: 'Add a Set', path: '/scan', external: false },
               { label: 'Profile', path: '/profile', external: false },
