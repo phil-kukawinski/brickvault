@@ -108,7 +108,11 @@ export default function CollectionScreen() {
       piece_count: selected.piece_count,
       image_url: selected.image_url,
       status: 'owned',
-      condition: 'sealed'
+      condition: 'sealed',
+      theme: selected.theme || null,
+      release_year: selected.release_year || null,
+      retired_year: selected.retired_year || null,
+      retail_price: selected.retail_price || null
     })
     setSelected(null)
     fetchCollection()
