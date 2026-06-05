@@ -7,7 +7,7 @@
   ],
   "headers": [
     {
-      "source": "/og-image.png",
+      "source": "/(.*)\\.png",
       "headers": [
         {
           "key": "Content-Type",
