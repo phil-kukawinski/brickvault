@@ -37,7 +37,7 @@ export default function SearchHistoryScreen() {
   }
 
   async function clearHistory() {
-    if (!window.confirm('Clear all search history?')) return
+    if (!window.confirm('Clear all activity history?')) return
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
     await supabase.from('activity_log').delete().eq('user_id', user.id)
@@ -69,6 +69,7 @@ export default function SearchHistoryScreen() {
     <div style={styles.container}>
       <Header />
       <div style={styles.content}>
+        <button style={styles.backBtn} onClick={() => navigate(-1)}>← Back</button>
         <div style={styles.headerRow}>
           <h1 style={styles.title}>Activity History</h1>
           {activity.length > 0 && (
@@ -128,12 +129,20 @@ const styles: Record<string, React.CSSProperties> = {
     width: '100%',
     flex: 1
   },
+  backBtn: {
+    background: 'none',
+    border: 'none',
+    color: Colors.yellow,
+    fontSize: '16px',
+    cursor: 'pointer',
+    marginBottom: '8px',
+    padding: 0
+  },
   headerRow: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '24px',
-    textAlign: 'center' as const
+    marginBottom: '24px'
   },
   title: {
     fontSize: '28px',
@@ -193,7 +202,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 'bold',
     color: Colors.yellow,
     marginBottom: '4px',
-    textTransform: 'uppercase',
+    textTransform: 'uppercase' as const,
     letterSpacing: '0.5px'
   },
   setName: {
@@ -214,7 +223,7 @@ const styles: Record<string, React.CSSProperties> = {
   date: {
     fontSize: '12px',
     color: 'rgba(255,255,255,0.4)',
-    whiteSpace: 'nowrap',
+    whiteSpace: 'nowrap' as const,
     flexShrink: 0
   }
 }
