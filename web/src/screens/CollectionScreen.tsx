@@ -218,6 +218,48 @@ export default function CollectionScreen() {
         ))}
       </div>
 
+      {sort === 'theme' && availableThemes.length > 0 && (
+        <div style={styles.subFilterRow}>
+          <span style={styles.subFilterLabel}>Filter by theme:</span>
+          <div style={styles.filterChips}>
+            {availableThemes.map(theme => (
+              <button
+                key={theme}
+                style={{ ...styles.chip, ...(filterThemes.includes(theme) ? styles.chipActive : {}) }}
+                onClick={() => setFilterThemes(prev =>
+                  prev.includes(theme) ? prev.filter(t => t !== theme) : [...prev, theme]
+                )}
+              >
+                {theme}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {sort === 'pieces' && (
+        <div style={styles.subFilterRow}>
+          <span style={styles.subFilterLabel}>Filter by pieces:</span>
+          <div style={styles.filterRangeRow}>
+            <input
+              style={styles.filterRangeInput}
+              type="number"
+              placeholder="Min"
+              value={filterMinPieces}
+              onChange={e => setFilterMinPieces(e.target.value)}
+            />
+            <span style={styles.rangeSep}>to</span>
+            <input
+              style={styles.filterRangeInput}
+              type="number"
+              placeholder="Max"
+              value={filterMaxPieces}
+              onChange={e => setFilterMaxPieces(e.target.value)}
+            />
+          </div>
+        </div>
+      )}
+
       <div style={styles.filterToggleRow}>
         <button
           style={styles.filterToggleBtn}
@@ -249,37 +291,12 @@ export default function CollectionScreen() {
 
       {showFilters && (
         <div style={styles.filterPanel}>
-          {availableThemes.length > 0 && (
-            <>
-              <p style={styles.filterLabel}>Theme</p>
-              <div style={styles.filterChips}>
-                {availableThemes.map(theme => (
-                  <button
-                    key={theme}
-                    style={{
-                      ...styles.chip,
-                      ...(filterThemes.includes(theme) ? styles.chipActive : {})
-                    }}
-                    onClick={() => setFilterThemes(prev =>
-                      prev.includes(theme) ? prev.filter(t => t !== theme) : [...prev, theme]
-                    )}
-                  >
-                    {theme}
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
-
           <p style={styles.filterLabel}>Condition</p>
           <div style={styles.filterChips}>
             {(['sealed', 'built', 'partial', 'incomplete'] as const).map(c => (
               <button
                 key={c}
-                style={{
-                  ...styles.chip,
-                  ...(filterConditions.includes(c) ? styles.chipActive : {})
-                }}
+                style={{ ...styles.chip, ...(filterConditions.includes(c) ? styles.chipActive : {}) }}
                 onClick={() => setFilterConditions(prev =>
                   prev.includes(c) ? prev.filter(x => x !== c) : [...prev, c]
                 )}
@@ -287,25 +304,6 @@ export default function CollectionScreen() {
                 {c.charAt(0).toUpperCase() + c.slice(1)}
               </button>
             ))}
-          </div>
-
-          <p style={styles.filterLabel}>Piece Count</p>
-          <div style={styles.filterRangeRow}>
-            <input
-              style={styles.filterRangeInput}
-              type="number"
-              placeholder="Min"
-              value={filterMinPieces}
-              onChange={e => setFilterMinPieces(e.target.value)}
-            />
-            <span style={styles.rangeSep}>to</span>
-            <input
-              style={styles.filterRangeInput}
-              type="number"
-              placeholder="Max"
-              value={filterMaxPieces}
-              onChange={e => setFilterMaxPieces(e.target.value)}
-            />
           </div>
 
           <p style={styles.filterLabel}>Retail Price</p>
@@ -1047,5 +1045,18 @@ const styles: Record<string, React.CSSProperties> = {
   rangePrefix: {
     color: 'rgba(255,255,255,0.6)',
     fontSize: '14px'
+  },
+  subFilterRow: {
+    padding: '0 24px 12px',
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: '8px'
+  },
+  subFilterLabel: {
+    fontSize: '12px',
+    fontWeight: 'bold',
+    color: 'rgba(255,255,255,0.5)',
+    textTransform: 'uppercase' as const,
+    letterSpacing: '0.5px'
   },
 }
