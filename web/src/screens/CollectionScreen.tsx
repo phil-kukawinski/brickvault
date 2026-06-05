@@ -30,6 +30,7 @@ export default function CollectionScreen() {
   const [editStatus, setEditStatus] = useState<'owned' | 'wishlist'>('owned')
   const [editCondition, setEditCondition] = useState<'sealed' | 'built' | 'partial' | 'incomplete'>('sealed')
   const [saving, setSaving] = useState(false)
+  const [showFilters, setShowFilters] = useState(false)
   const navigate = useNavigate()
   const [userId, setUserId] = useState<string>('')
   const [editingPriceId, setEditingPriceId] = useState<string | null>(null)
@@ -152,8 +153,8 @@ export default function CollectionScreen() {
     .filter(i => !filterMaxPieces || i.piece_count <= parseInt(filterMaxPieces))
     .filter(i => !filterMinPrice || (i.retail_price && i.retail_price >= parseFloat(filterMinPrice)))
     .filter(i => !filterMaxPrice || (i.retail_price && i.retail_price <= parseFloat(filterMaxPrice)))
-    .filter(i => !filterDateFrom || new Date(i.added_at) >= new Date(filterDateFrom))
-    .filter(i => !filterDateTo || new Date(i.added_at) <= new Date(filterDateTo))
+    .filter(i => !filterDateFrom || (i.release_year && i.release_year >= parseInt(filterDateFrom)))
+    .filter(i => !filterDateTo || (i.release_year && i.release_year <= parseInt(filterDateTo)))
     .sort((a, b) => {
       if (filter === 'all') {
         if (a.status !== b.status) return a.status === 'owned' ? -1 : 1
@@ -195,117 +196,176 @@ export default function CollectionScreen() {
         </div>
       </div>
 
-      <div style={styles.sortRow}>
-        <span style={styles.sortLabel}>Sort:</span>
-        {(['newest', 'oldest', 'name', 'pieces', 'theme'] as const).map(s => (
+      <div style={styles.filterRow}>
+        {(['owned', 'wishlist', 'all'] as const).map(f => (
           <button
-            key={s}
-            style={{ ...styles.sortBtn, ...(sort === s ? styles.sortBtnActive : {}) }}
-            onClick={() => setSort(s)}
+            key={f}
+            style={{ ...styles.filterBtn, ...(filter === f ? styles.filterBtnActive : {}) }}
+            onClick={() => setFilter(f)}
           >
-            {s.charAt(0).toUpperCase() + s.slice(1)}
+            {f.charAt(0).toUpperCase() + f.slice(1)}
           </button>
         ))}
+        <button
+          style={{ ...styles.filterBtn, ...(showFilters ? styles.filterBtnActive : {}), marginLeft: 'auto' }}
+          onClick={() => setShowFilters(!showFilters)}
+        >
+          Filters {activeFilterCount > 0 && `(${activeFilterCount})`}
+        </button>
       </div>
 
-      {(sort === 'newest' || sort === 'oldest') && (
-        <div style={styles.subFilterRow}>
-          <span style={styles.subFilterLabel}>Date range:</span>
-          <div style={styles.filterRangeRow}>
-            <input
-              style={styles.filterRangeInput}
-              type="date"
-              value={filterDateFrom}
-              onChange={e => setFilterDateFrom(e.target.value)}
-            />
-            <span style={styles.rangeSep}>to</span>
-            <input
-              style={styles.filterRangeInput}
-              type="date"
-              value={filterDateTo}
-              onChange={e => setFilterDateTo(e.target.value)}
-            />
-          </div>
-        </div>
-      )}
-
-      {sort === 'name' && (
-        <div style={styles.subFilterRow}>
-          <span style={styles.subFilterLabel}>Order:</span>
+      {showFilters && (
+        <div style={styles.filterPanel}>
+          <p style={styles.filterLabel}>Sort</p>
           <div style={styles.filterChips}>
-            {([{ value: 'az', label: 'A → Z' }, { value: 'za', label: 'Z → A' }]).map(o => (
+            {(['newest', 'oldest', 'name', 'pieces', 'theme'] as const).map(s => (
               <button
-                key={o.value}
-                style={{ ...styles.chip, ...(nameOrder === o.value ? styles.chipActive : {}) }}
-                onClick={() => setNameOrder(o.value as 'az' | 'za')}
+                key={s}
+                style={{ ...styles.chip, ...(sort === s ? styles.chipActive : {}) }}
+                onClick={() => setSort(s)}
               >
-                {o.label}
+                {s.charAt(0).toUpperCase() + s.slice(1)}
               </button>
             ))}
           </div>
-        </div>
-      )}
 
-      {sort === 'pieces' && (
-        <div style={styles.subFilterRow}>
-          <span style={styles.subFilterLabel}>Piece range:</span>
+          {(sort === 'newest' || sort === 'oldest') && (
+            <>
+              <p style={styles.filterLabel}>Release Year Range</p>
+              <div style={styles.filterRangeRow}>
+                <input
+                  style={styles.filterRangeInput}
+                  type="number"
+                  placeholder="From year"
+                  value={filterDateFrom}
+                  onChange={e => setFilterDateFrom(e.target.value)}
+                />
+                <span style={styles.rangeSep}>to</span>
+                <input
+                  style={styles.filterRangeInput}
+                  type="number"
+                  placeholder="To year"
+                  value={filterDateTo}
+                  onChange={e => setFilterDateTo(e.target.value)}
+                />
+              </div>
+            </>
+          )}
+
+          {sort === 'name' && (
+            <>
+              <p style={styles.filterLabel}>Order</p>
+              <div style={styles.filterChips}>
+                {([{ value: 'az', label: 'A → Z' }, { value: 'za', label: 'Z → A' }]).map(o => (
+                  <button
+                    key={o.value}
+                    style={{ ...styles.chip, ...(nameOrder === o.value ? styles.chipActive : {}) }}
+                    onClick={() => setNameOrder(o.value as 'az' | 'za')}
+                  >
+                    {o.label}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+
+          {sort === 'pieces' && (
+            <>
+              <p style={styles.filterLabel}>Piece Range</p>
+              <div style={styles.filterRangeRow}>
+                <input
+                  style={styles.filterRangeInput}
+                  type="number"
+                  placeholder="Min"
+                  value={filterMinPieces}
+                  onChange={e => setFilterMinPieces(e.target.value)}
+                />
+                <span style={styles.rangeSep}>to</span>
+                <input
+                  style={styles.filterRangeInput}
+                  type="number"
+                  placeholder="Max"
+                  value={filterMaxPieces}
+                  onChange={e => setFilterMaxPieces(e.target.value)}
+                />
+              </div>
+            </>
+          )}
+
+          {sort === 'theme' && availableThemes.length > 0 && (
+            <>
+              <p style={styles.filterLabel}>Theme</p>
+              <div style={styles.filterChips}>
+                {availableThemes.map(theme => (
+                  <button
+                    key={theme}
+                    style={{ ...styles.chip, ...(filterThemes.includes(theme) ? styles.chipActive : {}) }}
+                    onClick={() => setFilterThemes(prev =>
+                      prev.includes(theme) ? prev.filter(t => t !== theme) : [...prev, theme]
+                    )}
+                  >
+                    {theme}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+
+          <p style={styles.filterLabel}>Condition</p>
+          <div style={styles.filterChips}>
+            {(['sealed', 'built', 'partial', 'incomplete'] as const).map(c => (
+              <button
+                key={c}
+                style={{ ...styles.chip, ...(filterConditions.includes(c) ? styles.chipActive : {}) }}
+                onClick={() => setFilterConditions(prev =>
+                  prev.includes(c) ? prev.filter(x => x !== c) : [...prev, c]
+                )}
+              >
+                {c.charAt(0).toUpperCase() + c.slice(1)}
+              </button>
+            ))}
+          </div>
+
+          <p style={styles.filterLabel}>Retail Price</p>
           <div style={styles.filterRangeRow}>
+            <span style={styles.rangePrefix}>$</span>
             <input
               style={styles.filterRangeInput}
               type="number"
               placeholder="Min"
-              value={filterMinPieces}
-              onChange={e => setFilterMinPieces(e.target.value)}
+              value={filterMinPrice}
+              onChange={e => setFilterMinPrice(e.target.value)}
             />
             <span style={styles.rangeSep}>to</span>
+            <span style={styles.rangePrefix}>$</span>
             <input
               style={styles.filterRangeInput}
               type="number"
               placeholder="Max"
-              value={filterMaxPieces}
-              onChange={e => setFilterMaxPieces(e.target.value)}
+              value={filterMaxPrice}
+              onChange={e => setFilterMaxPrice(e.target.value)}
             />
           </div>
-        </div>
-      )}
 
-      {sort === 'theme' && availableThemes.length > 0 && (
-        <div style={styles.subFilterRow}>
-          <span style={styles.subFilterLabel}>Filter by theme:</span>
-          <div style={styles.filterChips}>
-            {availableThemes.map(theme => (
-              <button
-                key={theme}
-                style={{ ...styles.chip, ...(filterThemes.includes(theme) ? styles.chipActive : {}) }}
-                onClick={() => setFilterThemes(prev =>
-                  prev.includes(theme) ? prev.filter(t => t !== theme) : [...prev, theme]
-                )}
-              >
-                {theme}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {activeFilterCount > 0 && (
-        <div style={{ padding: '0 24px 8px' }}>
-          <button
-            style={styles.clearFiltersBtn}
-            onClick={() => {
-              setFilterThemes([])
-              setFilterConditions([])
-              setFilterMinPieces('')
-              setFilterMaxPieces('')
-              setFilterMinPrice('')
-              setFilterMaxPrice('')
-              setFilterDateFrom('')
-              setFilterDateTo('')
-              setNameOrder('az')
-            }}
-          >
-            Clear filters
-          </button>
+          {activeFilterCount > 0 && (
+            <button
+              style={styles.clearFiltersBtn}
+              onClick={() => {
+                setFilterThemes([])
+                setFilterConditions([])
+                setFilterMinPieces('')
+                setFilterMaxPieces('')
+                setFilterMinPrice('')
+                setFilterMaxPrice('')
+                setFilterDateFrom('')
+                setFilterDateTo('')
+                setNameOrder('az')
+                setSort('newest')
+              }}
+            >
+              Clear all filters
+            </button>
+          )}
         </div>
       )}
 
