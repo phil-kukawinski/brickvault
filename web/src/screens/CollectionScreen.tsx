@@ -35,6 +35,16 @@ export default function CollectionScreen() {
   const [editingPriceId, setEditingPriceId] = useState<string | null>(null)
   const [editingPriceValue, setEditingPriceValue] = useState<string>('')
   const [sort, setSort] = useState<'newest' | 'oldest' | 'name' | 'pieces' | 'theme'>('newest')
+  const [showFilters, setShowFilters] = useState(false)
+  const [filterThemes, setFilterThemes] = useState<string[]>([])
+  const [filterConditions, setFilterConditions] = useState<string[]>([])
+  const [filterMinPieces, setFilterMinPieces] = useState('')
+  const [filterMaxPieces, setFilterMaxPieces] = useState('')
+  const [filterMinPrice, setFilterMinPrice] = useState('')
+  const [filterMaxPrice, setFilterMaxPrice] = useState('')
+  const [filterDateFrom, setFilterDateFrom] = useState('')
+  const [filterDateTo, setFilterDateTo] = useState('')
+  const availableThemes = [...new Set(items.map(i => i.theme).filter(Boolean))] as string[]
 
   useEffect(() => {
     fetchCollection()
@@ -136,6 +146,14 @@ export default function CollectionScreen() {
     ...items.filter(i => i.status === 'owned'),
     ...items.filter(i => i.status === 'wishlist')
   ] : items.filter(i => i.status === filter))
+    .filter(i => filterThemes.length === 0 || (i.theme && filterThemes.includes(i.theme)))
+    .filter(i => filterConditions.length === 0 || (i.condition && filterConditions.includes(i.condition)))
+    .filter(i => !filterMinPieces || i.piece_count >= parseInt(filterMinPieces))
+    .filter(i => !filterMaxPieces || i.piece_count <= parseInt(filterMaxPieces))
+    .filter(i => !filterMinPrice || (i.retail_price && i.retail_price >= parseFloat(filterMinPrice)))
+    .filter(i => !filterMaxPrice || (i.retail_price && i.retail_price <= parseFloat(filterMaxPrice)))
+    .filter(i => !filterDateFrom || new Date(i.added_at) >= new Date(filterDateFrom))
+    .filter(i => !filterDateTo || new Date(i.added_at) <= new Date(filterDateTo))
     .sort((a, b) => {
       if (filter === 'all') {
         if (a.status !== b.status) return a.status === 'owned' ? -1 : 1
@@ -149,6 +167,17 @@ export default function CollectionScreen() {
         default: return 0
       }
     })
+
+    const activeFilterCount = [
+  filterThemes.length > 0,
+  filterConditions.length > 0,
+  filterMinPieces,
+  filterMaxPieces,
+  filterMinPrice,
+  filterMaxPrice,
+  filterDateFrom,
+  filterDateTo
+].filter(Boolean).length
 
   return (
     <div style={styles.container}>
@@ -188,6 +217,136 @@ export default function CollectionScreen() {
           </button>
         ))}
       </div>
+
+      <div style={styles.filterToggleRow}>
+        <button
+          style={styles.filterToggleBtn}
+          onClick={() => setShowFilters(!showFilters)}
+        >
+          {showFilters ? '▲ Hide Filters' : '▼ More Filters'}
+          {activeFilterCount > 0 && (
+            <span style={styles.filterBadge}>{activeFilterCount}</span>
+          )}
+        </button>
+        {activeFilterCount > 0 && (
+          <button
+            style={styles.clearFiltersBtn}
+            onClick={() => {
+              setFilterThemes([])
+              setFilterConditions([])
+              setFilterMinPieces('')
+              setFilterMaxPieces('')
+              setFilterMinPrice('')
+              setFilterMaxPrice('')
+              setFilterDateFrom('')
+              setFilterDateTo('')
+            }}
+          >
+            Clear filters
+          </button>
+        )}
+      </div>
+
+      {showFilters && (
+        <div style={styles.filterPanel}>
+          {availableThemes.length > 0 && (
+            <>
+              <p style={styles.filterLabel}>Theme</p>
+              <div style={styles.filterChips}>
+                {availableThemes.map(theme => (
+                  <button
+                    key={theme}
+                    style={{
+                      ...styles.chip,
+                      ...(filterThemes.includes(theme) ? styles.chipActive : {})
+                    }}
+                    onClick={() => setFilterThemes(prev =>
+                      prev.includes(theme) ? prev.filter(t => t !== theme) : [...prev, theme]
+                    )}
+                  >
+                    {theme}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+
+          <p style={styles.filterLabel}>Condition</p>
+          <div style={styles.filterChips}>
+            {(['sealed', 'built', 'partial', 'incomplete'] as const).map(c => (
+              <button
+                key={c}
+                style={{
+                  ...styles.chip,
+                  ...(filterConditions.includes(c) ? styles.chipActive : {})
+                }}
+                onClick={() => setFilterConditions(prev =>
+                  prev.includes(c) ? prev.filter(x => x !== c) : [...prev, c]
+                )}
+              >
+                {c.charAt(0).toUpperCase() + c.slice(1)}
+              </button>
+            ))}
+          </div>
+
+          <p style={styles.filterLabel}>Piece Count</p>
+          <div style={styles.filterRangeRow}>
+            <input
+              style={styles.filterRangeInput}
+              type="number"
+              placeholder="Min"
+              value={filterMinPieces}
+              onChange={e => setFilterMinPieces(e.target.value)}
+            />
+            <span style={styles.rangeSep}>to</span>
+            <input
+              style={styles.filterRangeInput}
+              type="number"
+              placeholder="Max"
+              value={filterMaxPieces}
+              onChange={e => setFilterMaxPieces(e.target.value)}
+            />
+          </div>
+
+          <p style={styles.filterLabel}>Retail Price</p>
+          <div style={styles.filterRangeRow}>
+            <span style={styles.rangePrefix}>$</span>
+            <input
+              style={styles.filterRangeInput}
+              type="number"
+              placeholder="Min"
+              value={filterMinPrice}
+              onChange={e => setFilterMinPrice(e.target.value)}
+            />
+            <span style={styles.rangeSep}>to</span>
+            <span style={styles.rangePrefix}>$</span>
+            <input
+              style={styles.filterRangeInput}
+              type="number"
+              placeholder="Max"
+              value={filterMaxPrice}
+              onChange={e => setFilterMaxPrice(e.target.value)}
+            />
+          </div>
+
+          <p style={styles.filterLabel}>Date Added</p>
+          <div style={styles.filterRangeRow}>
+            <input
+              style={styles.filterRangeInput}
+              type="date"
+              value={filterDateFrom}
+              onChange={e => setFilterDateFrom(e.target.value)}
+            />
+            <span style={styles.rangeSep}>to</span>
+            <input
+              style={styles.filterRangeInput}
+              type="date"
+              value={filterDateTo}
+              onChange={e => setFilterDateTo(e.target.value)}
+            />
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <div style={styles.centered}>
@@ -790,5 +949,103 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     gap: '4px',
     whiteSpace: 'nowrap' as const
+  },
+  filterToggleRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '0 24px 12px'
+  },
+  filterToggleBtn: {
+    background: 'none',
+    border: '1px solid rgba(255,255,255,0.2)',
+    borderRadius: '20px',
+    color: 'rgba(255,255,255,0.7)',
+    fontSize: '13px',
+    padding: '6px 14px',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px'
+  },
+  filterBadge: {
+    backgroundColor: Colors.yellow,
+    color: Colors.text.onYellow,
+    borderRadius: '50%',
+    width: '18px',
+    height: '18px',
+    fontSize: '11px',
+    fontWeight: 'bold',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  clearFiltersBtn: {
+    background: 'none',
+    border: 'none',
+    color: Colors.yellow,
+    fontSize: '13px',
+    cursor: 'pointer'
+  },
+  filterPanel: {
+    backgroundColor: 'rgba(0,8,20,0.6)',
+    border: '1px solid rgba(255,255,255,0.1)',
+    borderRadius: '12px',
+    padding: '16px',
+    margin: '0 24px 12px'
+  },
+  filterLabel: {
+    fontSize: '12px',
+    fontWeight: 'bold',
+    color: 'rgba(255,255,255,0.5)',
+    textTransform: 'uppercase' as const,
+    letterSpacing: '0.5px',
+    marginBottom: '8px',
+    marginTop: '12px'
+  },
+  filterChips: {
+    display: 'flex',
+    flexWrap: 'wrap' as const,
+    gap: '8px',
+    marginBottom: '4px'
+  },
+  chip: {
+    padding: '6px 12px',
+    borderRadius: '20px',
+    border: '1px solid rgba(255,255,255,0.2)',
+    backgroundColor: 'transparent',
+    color: Colors.white,
+    fontSize: '13px',
+    cursor: 'pointer'
+  },
+  chipActive: {
+    backgroundColor: Colors.yellow,
+    borderColor: Colors.yellow,
+    color: Colors.text.onYellow,
+    fontWeight: 'bold'
+  },
+  filterRangeRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    marginBottom: '4px'
+  },
+  filterRangeInput: {
+    flex: 1,
+    backgroundColor: 'rgba(0,8,20,0.6)',
+    border: '1px solid rgba(255,255,255,0.2)',
+    borderRadius: '8px',
+    padding: '8px 12px',
+    fontSize: '14px',
+    color: Colors.white,
+    outline: 'none'
+  },
+  rangeSep: {
+    color: 'rgba(255,255,255,0.4)',
+    fontSize: '13px'
+  },
+  rangePrefix: {
+    color: 'rgba(255,255,255,0.6)',
+    fontSize: '14px'
   },
 }
