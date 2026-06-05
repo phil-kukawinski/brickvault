@@ -14,12 +14,11 @@ export default function ScanScreen() {
   const [foundSet, setFoundSet] = useState<LegoSet | null>(null)
   const [condition, setCondition] = useState<'sealed' | 'built' | 'partial' | 'incomplete'>('sealed')
   const [ownedSetNumbers, setOwnedSetNumbers] = useState<string[]>([])
-  const [retailPrice, setRetailPrice] = useState<string>('')
-  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
   const [hasMore, setHasMore] = useState(false)
   const [page, setPage] = useState(1)
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const navigate = useNavigate()
 
   useEffect(() => {
     fetchOwned()
@@ -126,7 +125,7 @@ export default function ScanScreen() {
       status,
       condition: status === 'owned' ? condition : null,
       theme: theme || null,
-      retail_price: retailPrice ? parseFloat(retailPrice) : null,
+      retail_price: null,
       release_year: foundSet.year || null
     })
 
@@ -147,7 +146,6 @@ export default function ScanScreen() {
     setInput('')
     setResults([])
     setCondition('sealed')
-    setRetailPrice('')
   }
 
   return (
@@ -219,18 +217,6 @@ export default function ScanScreen() {
             </div>
           )}
 
-          <p style={styles.conditionLabel}>Retail Price (optional)</p>
-          <div style={styles.priceRow}>
-            <span style={styles.priceDollar}>$</span>
-            <input
-              style={styles.priceInput}
-              type="number"
-              placeholder="0.00"
-              value={retailPrice}
-              onChange={e => setRetailPrice(e.target.value)}
-            />
-          </div>
-
           <button style={styles.addBtn} onClick={() => addToCollection('owned')}>
             📦 Add to Collection
           </button>
@@ -281,11 +267,6 @@ export default function ScanScreen() {
         </div>
       )}
 
-      {!searching && !foundSet && results.length === 0 && input.length > 0 && (
-        <div style={styles.centered}>
-          <p style={{ color: 'rgba(255,255,255,0.6)' }}>No results found. Try a different search.</p>
-        </div>
-      )}
       {results.length > 0 && !foundSet && !searching && hasMore && (
         <button
           style={styles.loadMoreBtn}
@@ -293,6 +274,12 @@ export default function ScanScreen() {
         >
           Load more results
         </button>
+      )}
+
+      {!searching && !foundSet && results.length === 0 && input.length > 0 && (
+        <div style={styles.centered}>
+          <p style={{ color: 'rgba(255,255,255,0.6)' }}>No results found. Try a different search.</p>
+        </div>
       )}
       <Footer />
     </div>
@@ -534,28 +521,6 @@ const styles: Record<string, React.CSSProperties> = {
     textAlign: 'center' as const,
     textDecoration: 'none'
   },
-  priceRow: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    maxWidth: '400px',
-    width: '100%'
-  },
-  priceDollar: {
-    fontSize: '18px',
-    color: Colors.white,
-    fontWeight: 'bold'
-  },
-  priceInput: {
-    flex: 1,
-    backgroundColor: 'rgba(0,8,20,0.6)',
-    border: '1px solid rgba(255,255,255,0.2)',
-    borderRadius: '8px',
-    padding: '12px',
-    fontSize: '15px',
-    color: Colors.white,
-    outline: 'none'
-  },
   loadMoreBtn: {
     display: 'block',
     width: 'calc(100% - 48px)',
@@ -568,5 +533,5 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '15px',
     fontWeight: 'bold',
     cursor: 'pointer'
-  },
+  }
 }
