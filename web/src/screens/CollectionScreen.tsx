@@ -201,7 +201,7 @@ export default function CollectionScreen() {
       ) : (
         <div style={styles.list}>
           {filtered.map(item => (
-            <button key={item.id} style={styles.card} onClick={() => openDetail(item)}>
+            <div key={item.id} style={{ ...styles.card, position: 'relative' }} onClick={() => openDetail(item)}>
               {item.image_url
                 ? <img src={item.image_url} alt={item.name} style={styles.cardImage} />
                 : <div style={styles.imagePlaceholder}>🧱</div>
@@ -260,7 +260,20 @@ export default function CollectionScreen() {
                   )}
                 </div>
               </div>
-            </button>
+              {item.status === 'wishlist' && (
+                <button
+                  style={styles.quickRemoveBtn}
+                  onClick={async e => {
+                    e.stopPropagation()
+                    if (!window.confirm(`Remove ${item.name} from your wishlist?`)) return
+                    await supabase.from('collection').delete().eq('id', item.id)
+                    fetchCollection()
+                  }}
+                >
+                  ✕
+                </button>
+              )}
+            </div>
           ))}
         </div>
       )}
@@ -475,8 +488,9 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: '12px',
     overflow: 'hidden',
     cursor: 'pointer',
-    textAlign: 'left',
-    width: '100%'
+    textAlign: 'left' as const,
+    width: '100%',
+    position: 'relative' as const
   },
   cardImage: {
     width: '100px',
@@ -758,5 +772,22 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '15px',
     color: Colors.white,
     outline: 'none'
+  },
+  quickRemoveBtn: {
+    position: 'absolute' as const,
+    right: '12px',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    backgroundColor: 'rgba(255,0,0,0.15)',
+    border: '1px solid rgba(255,0,0,0.3)',
+    borderRadius: '50%',
+    color: '#ff6b6b',
+    width: '32px',
+    height: '32px',
+    cursor: 'pointer',
+    fontSize: '14px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
 }
