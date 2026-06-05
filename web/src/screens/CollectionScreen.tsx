@@ -206,8 +206,10 @@ export default function CollectionScreen() {
             {f.charAt(0).toUpperCase() + f.slice(1)}
           </button>
         ))}
+      </div>
+      <div style={{ padding: '0 24px 12px' }}>
         <button
-          style={{ ...styles.filterBtn, ...(showFilters ? styles.filterBtnActive : {}), marginLeft: 'auto' }}
+          style={{ ...styles.filterBtn, ...(showFilters ? styles.filterBtnActive : {}) }}
           onClick={() => setShowFilters(!showFilters)}
         >
           Filters {activeFilterCount > 0 && `(${activeFilterCount})`}
