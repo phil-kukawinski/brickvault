@@ -11,7 +11,6 @@ export default function LoginScreen() {
   const [error, setError] = useState('')
   const navigate = useNavigate()
   const [resetSent, setResetSent] = useState(false)
-  const [resetEmail, setResetEmail] = useState('')
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
@@ -27,12 +26,11 @@ export default function LoginScreen() {
   }
 
   async function handleForgotPassword() {
-    const emailToReset = resetEmail || email
-    if (!emailToReset.trim()) {
+    if (!email.trim()) {
       alert('Please enter your email address first.')
       return
     }
-    const { error } = await supabase.auth.resetPasswordForEmail(emailToReset, {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: 'https://mybrickkeep.com/reset-password'
     })
     if (error) {
