@@ -190,7 +190,12 @@ export default function CollectionScreen() {
         <div style={styles.headerRow}>
           <div>
             <h1 style={styles.title}>My Collection</h1>
-            <p style={styles.count}>{filtered.length} sets</p>
+            <p style={styles.count}>
+              {filtered.length === items.filter(i => filter === 'all' ? true : i.status === filter).length
+                ? `${filtered.length} sets`
+                : `${filtered.length} of ${items.filter(i => filter === 'all' ? true : i.status === filter).length} sets`
+              }
+            </p>
           </div>
           <button style={styles.addButton} onClick={() => navigate('/scan')}>+ Add Set</button>
         </div>
