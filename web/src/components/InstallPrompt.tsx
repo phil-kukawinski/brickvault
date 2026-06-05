@@ -120,19 +120,21 @@ const styles: Record<string, React.CSSProperties> = {
     bottom: 0,
     backgroundColor: 'rgba(0,0,0,0.7)',
     display: 'flex',
-    alignItems: 'flex-end',
+    alignItems: 'center',
     justifyContent: 'center',
-    zIndex: 1000
+    zIndex: 1000,
+    padding: '24px'
   },
   modal: {
     backgroundColor: '#001020',
-    borderTop: '1px solid rgba(255,255,255,0.15)',
-    borderRadius: '16px 16px 0 0',
+    border: '1px solid rgba(255,255,255,0.15)',
+    borderRadius: '16px',
     padding: '24px',
     width: '100%',
-    maxWidth: '600px',
+    maxWidth: '480px',
     maxHeight: '85vh',
-    overflowY: 'auto'
+    overflowY: 'auto',
+    position: 'relative' as const
   },
   closeBtn: {
     position: 'absolute' as const,
