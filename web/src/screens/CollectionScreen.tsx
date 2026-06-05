@@ -270,7 +270,7 @@ export default function CollectionScreen() {
                     fetchCollection()
                   }}
                 >
-                  ✕
+                  ✕ Remove
                 </button>
               )}
             </div>
@@ -780,14 +780,15 @@ const styles: Record<string, React.CSSProperties> = {
     transform: 'translateY(-50%)',
     backgroundColor: 'rgba(255,0,0,0.15)',
     border: '1px solid rgba(255,0,0,0.3)',
-    borderRadius: '50%',
+    borderRadius: '8px',
     color: '#ff6b6b',
-    width: '32px',
-    height: '32px',
+    padding: '6px 12px',
     cursor: 'pointer',
-    fontSize: '14px',
+    fontSize: '13px',
+    fontWeight: 'bold',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    gap: '4px',
+    whiteSpace: 'nowrap' as const
   },
 }
