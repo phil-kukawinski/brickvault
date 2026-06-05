@@ -24,7 +24,7 @@ export default function Footer() {
           { label: 'My Collection', path: '/collection' },
           { label: 'Add a Set', path: '/scan' },
           { label: 'Profile', path: '/profile' },
-          { label: 'Search History', path: '/history' },
+          { label: 'Activity History', path: '/history' },
           { label: 'About', path: '/about' },
           { label: 'Privacy', path: '/privacy' },
         ].map((item, index, arr) => (

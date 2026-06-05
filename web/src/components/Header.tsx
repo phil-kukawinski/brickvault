@@ -38,7 +38,7 @@ export default function Header() {
               { label: 'My Collection', path: '/collection', external: false },
               { label: 'Add a Set', path: '/scan', external: false },
               { label: 'Profile', path: '/profile', external: false },
-              { label: 'Search History', path: '/history', external: false },
+              { label: 'Activity History', path: '/history', external: false },
             ].map(item => (
               <button
                 key={item.path}

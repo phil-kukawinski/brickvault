@@ -138,11 +138,12 @@ const styles: Record<string, React.CSSProperties> = {
     marginBottom: '8px',
     padding: 0
   },
-  headerRow: {
+   headerRow: {
     display: 'flex',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: '24px'
+    marginBottom: '24px',
+    position: 'relative' as const
   },
   title: {
     fontSize: '28px',
@@ -152,6 +153,8 @@ const styles: Record<string, React.CSSProperties> = {
     flex: 1
   },
   clearBtn: {
+    position: 'absolute' as const,
+    right: 0,
     background: 'none',
     border: '1px solid rgba(255,255,255,0.2)',
     borderRadius: '8px',
