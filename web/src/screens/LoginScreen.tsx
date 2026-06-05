@@ -10,6 +10,8 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const navigate = useNavigate()
+  const [resetSent, setResetSent] = useState(false)
+  const [resetEmail, setResetEmail] = useState('')
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
@@ -21,6 +23,22 @@ export default function LoginScreen() {
       setError(error.message)
     } else {
       navigate('/')
+    }
+  }
+
+  async function handleForgotPassword() {
+    const emailToReset = resetEmail || email
+    if (!emailToReset.trim()) {
+      alert('Please enter your email address first.')
+      return
+    }
+    const { error } = await supabase.auth.resetPasswordForEmail(emailToReset, {
+      redirectTo: 'https://mybrickkeep.com/reset-password'
+    })
+    if (error) {
+      alert('Error sending reset email: ' + error.message)
+    } else {
+      setResetSent(true)
     }
   }
 
@@ -52,6 +70,20 @@ export default function LoginScreen() {
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
+
+        {resetSent ? (
+            <p style={styles.resetSuccess}>
+              Check your email for a password reset link!
+            </p>
+          ) : (
+            <button
+              style={styles.forgotBtn}
+              type="button"
+              onClick={handleForgotPassword}
+            >
+              Forgot your password?
+            </button>
+          )}
 
         <p style={styles.linkText}>
           Don't have an account?{' '}
@@ -140,5 +172,20 @@ const styles: Record<string, React.CSSProperties> = {
   link: {
     color: Colors.yellow,
     textDecoration: 'none'
-  }
+  },
+  forgotBtn: {
+    background: 'none',
+    border: 'none',
+    color: 'rgba(255,255,255,0.5)',
+    fontSize: '14px',
+    cursor: 'pointer',
+    marginTop: '8px',
+    textDecoration: 'underline'
+  },
+  resetSuccess: {
+    color: Colors.yellow,
+    fontSize: '14px',
+    textAlign: 'center' as const,
+    marginTop: '8px'
+  },
 }
