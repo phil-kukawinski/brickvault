@@ -19,6 +19,7 @@ type CollectionItem = {
   retail_price: number | null
   release_year: number | null
   retired_year: number | null
+  notes: string | null
   added_at: string
 }
 
@@ -49,6 +50,7 @@ export default function CollectionScreen() {
   const [editTheme, setEditTheme] = useState<string>('')
   const [editReleaseYear, setEditReleaseYear] = useState<string>('')
   const [editRetiredYear, setEditRetiredYear] = useState<string>('')
+  const [editNotes, setEditNotes] = useState<string>('')
 
   useEffect(() => {
     fetchCollection()
@@ -96,7 +98,8 @@ export default function CollectionScreen() {
         retail_price: selected.retail_price,
         theme: editTheme.trim() || null,
         release_year: editReleaseYear ? parseInt(editReleaseYear) : null,
-        retired_year: editRetiredYear ? parseInt(editRetiredYear) : null
+        retired_year: editRetiredYear ? parseInt(editRetiredYear) : null,
+        notes: editNotes.trim() || null,
       })
       .eq('id', selected.id)
     setSaving(false)
@@ -150,6 +153,7 @@ export default function CollectionScreen() {
     setEditTheme(item.theme || '')
     setEditReleaseYear(item.release_year?.toString() || '')
     setEditRetiredYear(item.retired_year?.toString() || '')
+    setEditNotes(item.notes || '')
   }
 
   const filtered = (filter === 'all' ? [
@@ -369,6 +373,14 @@ export default function CollectionScreen() {
               onChange={e => setEditRetiredYear(e.target.value)}
             />
 
+            <p style={styles.sectionLabel}>Notes</p>
+            <textarea
+              style={{ ...styles.modalInput, height: '80px', resize: 'none' as const }}
+              placeholder="Personal notes about this set..."
+              value={editNotes}
+              onChange={e => setEditNotes(e.target.value)}
+            />
+
           <p style={styles.filterLabel}>Retail Price</p>
           <div style={styles.filterRangeRow}>
             <span style={styles.rangePrefix}>$</span>
@@ -438,6 +450,9 @@ export default function CollectionScreen() {
                 )}
                 {item.theme && (
                   <p style={styles.cardDetail}>{item.theme}</p>
+                )}
+                {item.notes && (
+                  <p style={{ ...styles.cardDetail, fontStyle: 'italic' }}>"{item.notes}"</p>
                 )}
                 {editingPriceId === item.id ? (
                   <div style={styles.inlinePriceEdit} onClick={e => e.stopPropagation()}>
