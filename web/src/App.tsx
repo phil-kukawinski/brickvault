@@ -14,6 +14,7 @@ import AboutScreen from './screens/AboutScreen'
 import PrivacyScreen from './screens/PrivacyScreen'
 import HomeScreen from './screens/HomeScreen'
 import ResetPasswordScreen from './screens/ResetPasswordScreen'
+import SetScreen from './screens/SetScreen'
 
 function App() {
   const [session, setSession] = useState<any>(null)
@@ -51,6 +52,7 @@ function App() {
       <Route path="/about" element={<AboutScreen />} />
       <Route path="/privacy" element={<PrivacyScreen />} />
       <Route path="/reset-password" element={<ResetPasswordScreen />} />
+      <Route path="/set/:setNum" element={<SetScreen />} />
     </Routes>
   )
 }

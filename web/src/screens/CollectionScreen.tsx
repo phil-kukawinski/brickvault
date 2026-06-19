@@ -641,6 +641,21 @@ export default function CollectionScreen() {
   💰 Check Market Value
 </a>
 
+<button
+              style={styles.actionBtn}
+              onClick={() => {
+                const url = `https://mybrickkeep.com/set/${selected.set_number}`
+                if (navigator.share) {
+                  navigator.share({ title: selected.name, url })
+                } else {
+                  navigator.clipboard.writeText(url)
+                  alert('Link copied to clipboard!')
+                }
+              }}
+            >
+              📤 Share this Set
+            </button>
+
             <button style={styles.saveBtn} onClick={handleSave} disabled={saving}>
               {saving ? 'Saving...' : 'Save Changes'}
             </button>
