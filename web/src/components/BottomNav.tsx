@@ -5,7 +5,7 @@ const NAV_ITEMS = [
   { label: 'Collection', path: '/collection', icon: '📦' },
   { label: 'Add', path: '/scan', icon: '➕' },
   { label: 'Profile', path: '/profile', icon: '👤' },
-  { label: 'History', path: '/history', icon: '🕐' },
+  { label: 'Activity', path: '/history', icon: '🕐' },
 ]
 
 export default function BottomNav() {
