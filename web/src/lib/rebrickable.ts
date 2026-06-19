@@ -15,12 +15,13 @@ export type LegoSet = {
 
 export async function fetchSetByBarcode(barcode: string): Promise<LegoSet | null> {
   try {
-    const setNum = `${barcode}-1`
-    const response = await fetch(`${BASE_URL}/sets/${setNum}/`, {
+    const response = await fetch(`${BASE_URL}/sets/?search=${encodeURIComponent(barcode)}`, {
       headers: { Authorization: `key ${REBRICKABLE_API_KEY}` }
     })
     if (!response.ok) return null
-    return await response.json() as LegoSet
+    const data = await response.json()
+    if (data.results && data.results.length > 0) return data.results[0] as LegoSet
+    return null
   } catch {
     return null
   }

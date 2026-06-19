@@ -5,7 +5,7 @@ import type { LegoSet } from '../lib/rebrickable'
 import { Colors } from '../lib/theme'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
-import { fetchSetBySetNum, searchSets, fetchThemeById } from '../lib/rebrickable'
+import { fetchSetBySetNum, searchSets, fetchThemeById, fetchSetByBarcode } from '../lib/rebrickable'
 import Quagga from 'quagga'
 
 export default function ScanScreen() {
@@ -18,15 +18,15 @@ export default function ScanScreen() {
   const [searchQuery, setSearchQuery] = useState('')
   const [hasMore, setHasMore] = useState(false)
   const [page, setPage] = useState(1)
-  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const navigate = useNavigate()
   const [scannerActive, setScannerActive] = useState(false)
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const scannerRef = useRef<HTMLDivElement>(null)
+  const navigate = useNavigate()
 
   useEffect(() => {
     fetchOwned()
     return () => {
-      if (scannerActive) Quagga.stop()
+      try { Quagga.stop() } catch {}
     }
   }, [])
 
@@ -60,47 +60,6 @@ export default function ScanScreen() {
     await handleSearchWithInput(input)
   }
 
-  function startQuagga() {
-    setScannerActive(true)
-    setTimeout(() => {
-      Quagga.init({
-        inputStream: {
-          type: 'LiveStream',
-          target: scannerRef.current!,
-          constraints: {
-            facingMode: 'environment'
-          }
-        },
-        decoder: {
-          readers: ['ean_reader', 'ean_8_reader', 'upc_reader', 'upc_e_reader']
-        },
-        locate: true
-      }, (err: any) => {
-        if (err) {
-          console.error(err)
-          alert('Camera access failed. Try entering the set number manually.')
-          setScannerActive(false)
-          return
-        }
-        Quagga.start()
-      })
-
-      Quagga.onDetected((result: any) => {
-        const code = result.codeResult.code
-        if (code) {
-          stopQuagga()
-          setInput(code)
-          handleSearchWithInput(code)
-        }
-      })
-    }, 100)
-  }
-
-  function stopQuagga() {
-    Quagga.stop()
-    setScannerActive(false)
-  }
-
   async function handleSearchWithInput(value: string, pageNum = 1) {
     if (!value.trim()) return
     setSearching(true)
@@ -124,6 +83,56 @@ export default function ScanScreen() {
     setSearching(false)
     setHasMore(res.length === 50)
     setResults(prev => pageNum === 1 ? res : [...prev, ...res])
+  }
+
+  function startQuagga() {
+    setScannerActive(true)
+    setTimeout(() => {
+      Quagga.init({
+        inputStream: {
+          type: 'LiveStream',
+          target: scannerRef.current!,
+          constraints: { facingMode: 'environment' }
+        },
+        decoder: {
+          readers: ['ean_reader', 'ean_8_reader', 'upc_reader', 'upc_e_reader']
+        },
+        locate: true
+      }, (err: any) => {
+        if (err) {
+          console.error(err)
+          alert('Camera access failed. Try entering the set number manually.')
+          setScannerActive(false)
+          return
+        }
+        Quagga.start()
+      })
+
+      Quagga.onDetected(async (result: any) => {
+        const code = result.codeResult.code
+        if (code) {
+          stopQuagga()
+          setSearching(true)
+          setResults([])
+          setFoundSet(null)
+
+          const byBarcode = await fetchSetByBarcode(code)
+          if (byBarcode) {
+            setSearching(false)
+            setFoundSet(byBarcode)
+            return
+          }
+
+          setInput(code)
+          await handleSearchWithInput(code)
+        }
+      })
+    }, 100)
+  }
+
+  function stopQuagga() {
+    try { Quagga.stop() } catch {}
+    setScannerActive(false)
   }
 
   async function addToCollection(status: 'owned' | 'wishlist') {
@@ -582,5 +591,5 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '13px',
     color: 'rgba(255,255,255,0.5)',
     marginTop: '8px'
-  },
+  }
 }
