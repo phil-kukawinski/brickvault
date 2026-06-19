@@ -126,29 +126,6 @@ export default function ScanScreen() {
     setResults(prev => pageNum === 1 ? res : [...prev, ...res])
   }
 
-  async function handleBarcodeScan(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
-    if ('BarcodeDetector' in window) {
-      try {
-        const detector = new (window as any).BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e'] })
-        const bitmap = await createImageBitmap(file)
-        const barcodes = await detector.detect(bitmap)
-        if (barcodes.length > 0) {
-          const value = barcodes[0].rawValue
-          setInput(value)
-          await handleSearchWithInput(value)
-        } else {
-          alert('No barcode detected. Try again with better lighting.')
-        }
-      } catch {
-        alert('Could not read barcode. Try entering the set number manually.')
-      }
-    } else {
-      alert('Barcode scanning is not supported on this browser. Please enter the set number manually.')
-    }
-  }
-
   async function addToCollection(status: 'owned' | 'wishlist') {
     if (!foundSet) return
     const { data: { user } } = await supabase.auth.getUser()
