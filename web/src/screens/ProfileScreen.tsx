@@ -112,6 +112,19 @@ export default function ProfileScreen() {
     }
   }
 
+  async function handleDeleteAccount() {
+    if (!window.confirm('Are you sure you want to delete your account? This will permanently delete all your data including your collection, gallery, and profile. This cannot be undone.')) return
+    if (!window.confirm('Last chance — are you absolutely sure? All your data will be gone forever.')) return
+    
+    const { error } = await supabase.rpc('delete_user')
+    if (error) {
+      alert('Error deleting account: ' + error.message)
+    } else {
+      await supabase.auth.signOut()
+      navigate('/')
+    }
+  }
+
   function getPublicUrl(path: string) {
     const { data } = supabase.storage.from('set-media').getPublicUrl(path)
     return data.publicUrl
@@ -336,6 +349,10 @@ export default function ProfileScreen() {
         <button style={styles.collectionBtn} onClick={() => navigate('/collection')}>
           View My Collection
         </button>
+
+        <button style={styles.deleteAccountBtn} onClick={handleDeleteAccount}>
+          Delete My Account
+        </button>
       </div>
       <Footer />
     </div>
@@ -409,5 +426,17 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '4px 0',
     textAlign: 'left' as const,
     marginBottom: '8px'
+  },
+  deleteAccountBtn: {
+    width: '100%',
+    padding: '16px',
+    borderRadius: '8px',
+    border: '1px solid rgba(255,0,0,0.3)',
+    backgroundColor: 'transparent',
+    color: 'rgba(255,0,0,0.5)',
+    fontSize: '14px',
+    cursor: 'pointer',
+    marginTop: '32px',
+    marginBottom: '24px'
   },
 }
