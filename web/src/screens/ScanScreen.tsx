@@ -117,7 +117,11 @@ export default function ScanScreen() {
           setFoundSet(null)
 
           // Extract item number from UPC (digits 7-11)
-          const itemNumber = code.length >= 12 ? code.substring(6, 11) : code
+          // Remove leading digit (check digit prefix) if present, then extract item number
+const cleaned = code.replace(/^0+/, '') // remove leading zeros
+const itemNumber = cleaned.length >= 12 
+  ? cleaned.substring(6, 11)  // digits 7-11 = item number
+  : code.substring(1, 6)      // fallback
 
           // Try barcode lookup
           const byBarcode = await fetchSetByBarcode(code)
