@@ -87,6 +87,35 @@ export default function CollectionScreen() {
     if (!error) setItems(data || [])
   }
 
+  function exportToCSV() {
+    const headers = ['Name', 'Set Number', 'Status', 'Condition', 'Theme', 'Pieces', 'Release Year', 'Retired Year', 'Retail Price', 'Notes', 'Date Added']
+    const rows = items.map(item => [
+      item.name,
+      item.set_number,
+      item.status,
+      item.condition || '',
+      item.theme || '',
+      item.piece_count,
+      item.release_year || '',
+      item.retired_year || '',
+      item.retail_price || '',
+      item.notes || '',
+      new Date(item.added_at).toLocaleDateString('en-US')
+    ])
+
+    const csv = [headers, ...rows]
+      .map(row => row.map(val => `"${String(val).replace(/"/g, '""')}"`).join(','))
+      .join('\n')
+
+    const blob = new Blob([csv], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `brickkeep-collection-${new Date().toISOString().split('T')[0]}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   async function handleSave() {
     if (!selected) return
     setSaving(true)
@@ -210,7 +239,10 @@ export default function CollectionScreen() {
               }
             </p>
           </div>
-          <button style={styles.addButton} onClick={() => navigate('/scan')}>+ Add Set</button>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button style={styles.exportButton} onClick={exportToCSV}>↓ CSV</button>
+            <button style={styles.addButton} onClick={() => navigate('/scan')}>+ Add Set</button>
+          </div>
         </div>
       </div>
 
@@ -1150,5 +1182,15 @@ const styles: Record<string, React.CSSProperties> = {
     color: Colors.white,
     outline: 'none',
     boxSizing: 'border-box' as const
+  },
+  exportButton: {
+    backgroundColor: 'transparent',
+    color: Colors.yellow,
+    border: `1px solid ${Colors.yellow}`,
+    borderRadius: '8px',
+    padding: '10px 16px',
+    fontWeight: 'bold',
+    fontSize: '15px',
+    cursor: 'pointer'
   },
 }
