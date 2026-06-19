@@ -46,6 +46,9 @@ export default function CollectionScreen() {
   const [filterDateTo, setFilterDateTo] = useState('')
   const [nameOrder, setNameOrder] = useState<'az' | 'za'>('az')
   const availableThemes = [...new Set(items.map(i => i.theme).filter(Boolean))] as string[]
+  const [editTheme, setEditTheme] = useState<string>('')
+  const [editReleaseYear, setEditReleaseYear] = useState<string>('')
+  const [editRetiredYear, setEditRetiredYear] = useState<string>('')
 
   useEffect(() => {
     fetchCollection()
@@ -90,7 +93,10 @@ export default function CollectionScreen() {
       .update({
         status: editStatus,
         condition: editStatus === 'owned' ? editCondition : null,
-        retail_price: selected.retail_price
+        retail_price: selected.retail_price,
+        theme: editTheme.trim() || null,
+        release_year: editReleaseYear ? parseInt(editReleaseYear) : null,
+        retired_year: editRetiredYear ? parseInt(editRetiredYear) : null
       })
       .eq('id', selected.id)
     setSaving(false)
@@ -141,6 +147,9 @@ export default function CollectionScreen() {
     setSelected(item)
     setEditStatus(item.status)
     setEditCondition(item.condition ?? 'sealed')
+    setEditTheme(item.theme || '')
+    setEditReleaseYear(item.release_year?.toString() || '')
+    setEditRetiredYear(item.retired_year?.toString() || '')
   }
 
   const filtered = (filter === 'all' ? [
@@ -332,6 +341,33 @@ export default function CollectionScreen() {
               </button>
             ))}
           </div>
+
+          <p style={styles.sectionLabel}>Theme</p>
+            <input
+              style={styles.modalInput}
+              type="text"
+              placeholder="e.g. Star Wars"
+              value={editTheme}
+              onChange={e => setEditTheme(e.target.value)}
+            />
+
+            <p style={styles.sectionLabel}>Release Year</p>
+            <input
+              style={styles.modalInput}
+              type="number"
+              placeholder="e.g. 2021"
+              value={editReleaseYear}
+              onChange={e => setEditReleaseYear(e.target.value)}
+            />
+
+            <p style={styles.sectionLabel}>Retired Year</p>
+            <input
+              style={styles.modalInput}
+              type="number"
+              placeholder="e.g. 2023"
+              value={editRetiredYear}
+              onChange={e => setEditRetiredYear(e.target.value)}
+            />
 
           <p style={styles.filterLabel}>Retail Price</p>
           <div style={styles.filterRangeRow}>
@@ -1088,5 +1124,16 @@ const styles: Record<string, React.CSSProperties> = {
     color: 'rgba(255,255,255,0.5)',
     textTransform: 'uppercase' as const,
     letterSpacing: '0.5px'
+  },
+  modalInput: {
+    width: '100%',
+    backgroundColor: 'rgba(0,8,20,0.6)',
+    border: '1px solid rgba(255,255,255,0.2)',
+    borderRadius: '8px',
+    padding: '12px',
+    fontSize: '15px',
+    color: Colors.white,
+    outline: 'none',
+    boxSizing: 'border-box' as const
   },
 }
