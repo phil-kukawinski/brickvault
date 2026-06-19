@@ -70,6 +70,7 @@ export default function ScanScreen() {
     }
     setPage(pageNum)
 
+    // Try direct set number lookup
     const bySetNum = await fetchSetBySetNum(
       value.includes('-') ? value : `${value}-1`
     )
@@ -77,6 +78,17 @@ export default function ScanScreen() {
       setSearching(false)
       setFoundSet(bySetNum)
       return
+    }
+
+    // If looks like a UPC, try last 5-6 digits as set number
+    if (value.length >= 10) {
+      const last5 = value.slice(-6, -1)
+      const byShort = await fetchSetBySetNum(`${last5}-1`)
+      if (byShort && pageNum === 1) {
+        setSearching(false)
+        setFoundSet(byShort)
+        return
+      }
     }
 
     const res = await searchSets(value, pageNum)
@@ -116,14 +128,7 @@ export default function ScanScreen() {
           setResults([])
           setFoundSet(null)
 
-          // Extract item number from UPC (digits 7-11)
-          // Remove leading digit (check digit prefix) if present, then extract item number
-const cleaned = code.replace(/^0+/, '') // remove leading zeros
-const itemNumber = cleaned.length >= 12 
-  ? cleaned.substring(6, 11)  // digits 7-11 = item number
-  : code.substring(1, 6)      // fallback
-
-          // Try barcode lookup
+          // Try barcode lookup first
           const byBarcode = await fetchSetByBarcode(code)
           if (byBarcode) {
             setSearching(false)
@@ -131,17 +136,9 @@ const itemNumber = cleaned.length >= 12
             return
           }
 
-          // Try item number as set number
-          const byItem = await fetchSetBySetNum(`${itemNumber}-1`)
-          if (byItem) {
-            setSearching(false)
-            setFoundSet(byItem)
-            return
-          }
-
-          // Fall back to search with item number
-          setInput(itemNumber)
-          await handleSearchWithInput(itemNumber)
+          // Fall back to search with full code
+          setInput(code)
+          await handleSearchWithInput(code)
         }
       })
     }, 100)
