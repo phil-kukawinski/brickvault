@@ -5,8 +5,7 @@ import type { LegoSet } from '../lib/rebrickable'
 import { Colors } from '../lib/theme'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
-import { fetchSetBySetNum, searchSets, fetchThemeById, fetchSetByBarcode } from '../lib/rebrickable'
-import Quagga from 'quagga'
+import { fetchSetBySetNum, searchSets, fetchThemeById } from '../lib/rebrickable'
 
 export default function ScanScreen() {
   const [input, setInput] = useState('')
@@ -18,16 +17,11 @@ export default function ScanScreen() {
   const [searchQuery, setSearchQuery] = useState('')
   const [hasMore, setHasMore] = useState(false)
   const [page, setPage] = useState(1)
-  const [scannerActive, setScannerActive] = useState(false)
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const scannerRef = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
 
   useEffect(() => {
     fetchOwned()
-    return () => {
-      try { Quagga.stop() } catch {}
-    }
   }, [])
 
   async function fetchOwned() {
@@ -95,58 +89,6 @@ export default function ScanScreen() {
     setSearching(false)
     setHasMore(res.length === 50)
     setResults(prev => pageNum === 1 ? res : [...prev, ...res])
-  }
-
-  function startQuagga() {
-    setScannerActive(true)
-    setTimeout(() => {
-      Quagga.init({
-        inputStream: {
-          type: 'LiveStream',
-          target: scannerRef.current!,
-          constraints: { facingMode: 'environment' }
-        },
-        decoder: {
-          readers: ['ean_reader', 'ean_8_reader', 'upc_reader', 'upc_e_reader']
-        },
-        locate: true
-      }, (err: any) => {
-        if (err) {
-          console.error(err)
-          alert('Camera access failed. Try entering the set number manually.')
-          setScannerActive(false)
-          return
-        }
-        Quagga.start()
-      })
-
-      Quagga.onDetected(async (result: any) => {
-        const code = result.codeResult.code
-        if (code) {
-          stopQuagga()
-          setSearching(true)
-          setResults([])
-          setFoundSet(null)
-
-          // Try barcode lookup first
-          const byBarcode = await fetchSetByBarcode(code)
-          if (byBarcode) {
-            setSearching(false)
-            setFoundSet(byBarcode)
-            return
-          }
-
-          // Fall back to search with full code
-          setInput(code)
-          await handleSearchWithInput(code)
-        }
-      })
-    }, 100)
-  }
-
-  function stopQuagga() {
-    try { Quagga.stop() } catch {}
-    setScannerActive(false)
   }
 
   async function addToCollection(status: 'owned' | 'wishlist') {
@@ -217,21 +159,9 @@ export default function ScanScreen() {
       </div>
 
       {window.innerWidth <= 768 && (
-        <>
-          <button
-            style={styles.scanBtn}
-            onClick={scannerActive ? stopQuagga : startQuagga}
-          >
-            {scannerActive ? '⏹ Stop Scanner' : '📷 Scan Barcode'}
-          </button>
-
-          {scannerActive && (
-            <div style={styles.scannerWrapper}>
-              <div ref={scannerRef} style={styles.scannerView} />
-              <p style={styles.scannerHint}>Point camera at barcode</p>
-            </div>
-          )}
-        </>
+        <p style={styles.scanTip}>
+          💡 Tip: Find the set number on the box (e.g. 75192) and type it above.
+        </p>
       )}
 
       <a
@@ -546,19 +476,6 @@ const styles: Record<string, React.CSSProperties> = {
     marginTop: '16px',
     textAlign: 'center' as const
   },
-  scanBtn: {
-    display: 'block',
-    width: 'calc(100% - 48px)',
-    margin: '0 24px 8px',
-    padding: '14px',
-    borderRadius: '8px',
-    border: '1px solid rgba(255,255,255,0.2)',
-    backgroundColor: 'rgba(0,8,20,0.6)',
-    color: Colors.white,
-    fontSize: '15px',
-    cursor: 'pointer',
-    textAlign: 'center' as const
-  },
   brickitBtn: {
     display: 'block',
     width: 'calc(100% - 48px)',
@@ -586,24 +503,11 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 'bold',
     cursor: 'pointer'
   },
-  scannerWrapper: {
-    margin: '0 24px 12px',
-    borderRadius: '12px',
-    overflow: 'hidden',
-    position: 'relative' as const
-  },
-  scannerView: {
-    width: '100%',
-    height: '240px',
-    backgroundColor: '#000',
-    borderRadius: '12px',
-    overflow: 'hidden',
-    position: 'relative' as const
-  },
-  scannerHint: {
-    textAlign: 'center' as const,
+  scanTip: {
     fontSize: '13px',
-    color: 'rgba(255,255,255,0.5)',
-    marginTop: '8px'
-  }
+    color: 'rgba(255,255,255,0.4)',
+    textAlign: 'center' as const,
+    padding: '0 24px 12px',
+    fontStyle: 'italic'
+  },
 }
