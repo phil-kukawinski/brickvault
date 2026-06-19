@@ -6,6 +6,7 @@ import { Colors } from '../lib/theme'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import { fetchSetBySetNum, searchSets, fetchThemeById } from '../lib/rebrickable'
+import Quagga from 'quagga'
 
 export default function ScanScreen() {
   const [input, setInput] = useState('')
@@ -19,9 +20,14 @@ export default function ScanScreen() {
   const [page, setPage] = useState(1)
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const navigate = useNavigate()
+  const [scannerActive, setScannerActive] = useState(false)
+  const scannerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     fetchOwned()
+    return () => {
+      if (scannerActive) Quagga.stop()
+    }
   }, [])
 
   async function fetchOwned() {
@@ -52,6 +58,47 @@ export default function ScanScreen() {
   const handleSearch = async () => {
     if (!input.trim()) return
     await handleSearchWithInput(input)
+  }
+
+  function startQuagga() {
+    setScannerActive(true)
+    setTimeout(() => {
+      Quagga.init({
+        inputStream: {
+          type: 'LiveStream',
+          target: scannerRef.current!,
+          constraints: {
+            facingMode: 'environment'
+          }
+        },
+        decoder: {
+          readers: ['ean_reader', 'ean_8_reader', 'upc_reader', 'upc_e_reader']
+        },
+        locate: true
+      }, (err: any) => {
+        if (err) {
+          console.error(err)
+          alert('Camera access failed. Try entering the set number manually.')
+          setScannerActive(false)
+          return
+        }
+        Quagga.start()
+      })
+
+      Quagga.onDetected((result: any) => {
+        const code = result.codeResult.code
+        if (code) {
+          stopQuagga()
+          setInput(code)
+          handleSearchWithInput(code)
+        }
+      })
+    }, 100)
+  }
+
+  function stopQuagga() {
+    Quagga.stop()
+    setScannerActive(false)
   }
 
   async function handleSearchWithInput(value: string, pageNum = 1) {
@@ -170,16 +217,21 @@ export default function ScanScreen() {
       </div>
 
       {window.innerWidth <= 768 && (
-        <label style={styles.scanBtn}>
-          📷 Scan Barcode
-          <input
-            type="file"
-            accept="image/*"
-            capture="environment"
-            style={{ display: 'none' }}
-            onChange={handleBarcodeScan}
-          />
-        </label>
+        <>
+          <button
+            style={styles.scanBtn}
+            onClick={scannerActive ? stopQuagga : startQuagga}
+          >
+            {scannerActive ? '⏹ Stop Scanner' : '📷 Scan Barcode'}
+          </button>
+
+          {scannerActive && (
+            <div style={styles.scannerWrapper}>
+              <div ref={scannerRef} style={styles.scannerView} />
+              <p style={styles.scannerHint}>Point camera at barcode</p>
+            </div>
+          )}
+        </>
       )}
 
       <a
@@ -533,5 +585,25 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '15px',
     fontWeight: 'bold',
     cursor: 'pointer'
-  }
+  },
+  scannerWrapper: {
+    margin: '0 24px 12px',
+    borderRadius: '12px',
+    overflow: 'hidden',
+    position: 'relative' as const
+  },
+  scannerView: {
+    width: '100%',
+    height: '240px',
+    backgroundColor: '#000',
+    borderRadius: '12px',
+    overflow: 'hidden',
+    position: 'relative' as const
+  },
+  scannerHint: {
+    textAlign: 'center' as const,
+    fontSize: '13px',
+    color: 'rgba(255,255,255,0.5)',
+    marginTop: '8px'
+  },
 }
