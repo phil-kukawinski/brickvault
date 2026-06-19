@@ -116,6 +116,10 @@ export default function ScanScreen() {
           setResults([])
           setFoundSet(null)
 
+          // Extract item number from UPC (digits 7-11)
+          const itemNumber = code.length >= 12 ? code.substring(6, 11) : code
+
+          // Try barcode lookup
           const byBarcode = await fetchSetByBarcode(code)
           if (byBarcode) {
             setSearching(false)
@@ -123,8 +127,17 @@ export default function ScanScreen() {
             return
           }
 
-          setInput(code)
-          await handleSearchWithInput(code)
+          // Try item number as set number
+          const byItem = await fetchSetBySetNum(`${itemNumber}-1`)
+          if (byItem) {
+            setSearching(false)
+            setFoundSet(byItem)
+            return
+          }
+
+          // Fall back to search with item number
+          setInput(itemNumber)
+          await handleSearchWithInput(itemNumber)
         }
       })
     }, 100)
